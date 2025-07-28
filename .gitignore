@@ -1,0 +1,25 @@
+# Ignore node_modules and environment files
+
+# Root
+node_modules/
+.env
+
+# Server
+server/node_modules/
+server/.env
+
+# Client
+client/node_modules/
+client/build/
+client/.env
+
+# Logs
+logs/
+*.log
+
+# Uploaded files (adjust if it's inside server)
+uploads/
+server/uploads/
+
+# MacOS
+.DS_Store
