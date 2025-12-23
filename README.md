@@ -1,6 +1,6 @@
-# Gallery Hub
+# Pixel Hub
 
-**Gallery Hub** is a full-stack image gallery web application built with:
+**Pixel Hub** is a full-stack image gallery web application built with:
 
 - **Frontend:** React, Tailwind CSS
 - **Backend:** Node.js, Express
