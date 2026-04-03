@@ -18,7 +18,8 @@ const Post = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/upload/fetch-images');
+        const userId = user?.id || '';
+        const res = await axios.get(`http://localhost:8000/upload/fetch-images?user_id=${userId}`);
         setImages(res.data);
       } catch (err) {
         console.error('Error fetching images:', err);
@@ -28,8 +29,10 @@ const Post = () => {
       }
     };
 
-    fetchImages();
-  }, []);
+    if (isLoaded) {
+      fetchImages();
+    }
+  }, [user, isLoaded]);
 
   const categories = [...new Set(images.map(img => img.category))];
 

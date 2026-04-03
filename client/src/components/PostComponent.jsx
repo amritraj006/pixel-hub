@@ -3,26 +3,30 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight } from 'react-icons/fi';
+import { useUser } from '@clerk/clerk-react';
 import UserPostCard from './users/UserPostCard';
 
 
-
 const PostComponent = () => {
+  const { user, isLoaded } = useUser();
   const [latestPosts, setLatestPosts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/upload/latest-posts');
+        const userId = user?.id || '';
+        const res = await axios.get(`http://localhost:8000/upload/latest-posts?user_id=${userId}`);
         setLatestPosts(res.data);
       } catch (err) {
         console.error('Failed to fetch latest posts:', err);
       }
     };
 
-    fetchPosts();
-  }, []);
+    if (isLoaded) {
+      fetchPosts();
+    }
+  }, [user, isLoaded]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,7 +47,7 @@ const PostComponent = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold md:text-5xl text-gray-900 mb-2 bg-clip-text  bg-gradient-to-r ">
+        <h2 className="text-4xl font-bold md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-4 inline-block">
           Latest Community Posts
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -55,10 +59,14 @@ const PostComponent = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+        className="flex flex-col space-y-12 max-w-xl md:max-w-2xl mx-auto w-full"
       >
         {latestPosts.map((post) => (
-          <UserPostCard key={post.id} post={post} />
+          <UserPostCard 
+            key={post.id} 
+            post={post} 
+            onDelete={(deletedId) => setLatestPosts(prev => prev.filter(p => p.id !== deletedId))} 
+          />
         ))}
       </motion.div>
 

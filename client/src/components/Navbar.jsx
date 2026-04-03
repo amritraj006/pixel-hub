@@ -71,7 +71,7 @@ const Navbar = () => {
                 📷
               </motion.div>
               <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                GalleryHub
+                PixelHub
               </span>
             </Link>
           </div>

@@ -27,7 +27,7 @@ const Footer = () => {
             <div className="flex items-center gap-2">
               <Link to="/" className="flex items-center space-x-2 group transition-all duration-200">
                     <div className="text-2xl transition-transform duration-300 group-hover:scale-110">📷</div>
-                    <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">GalleryHub</span>
+                    <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">PixelHub</span>
                 </Link>
               
             </div>

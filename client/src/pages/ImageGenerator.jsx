@@ -16,9 +16,28 @@ const ImageGenerator = () => {
   const [isPromptFocused, setIsPromptFocused] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isHoveringGenerate, setIsHoveringGenerate] = useState(false);
-  const { isSignedIn } = useUser();
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const { isSignedIn, user } = useUser();
 
-  const {user} = useUser();
+  const fetchHistory = async () => {
+    if (!isSignedIn || !user) return;
+    try {
+      const res = await fetch(`http://localhost:8000/api/ai/history/${user.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setHistory(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch history', err);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isSignedIn && user) {
+      fetchHistory();
+    }
+  }, [isSignedIn, user]);
 
   const generateImage = async () => {
     if (!isSignedIn) return;
@@ -27,15 +46,13 @@ const ImageGenerator = () => {
       setError('Please enter a prompt');
       return;
     }
-    
+
     setLoading(true);
     setImage(null);
     setError('');
+    setDownloadProgress(0);
 
     try {
-      const encodedPrompt = encodeURIComponent(prompt.trim());
-      const timestamp = Date.now();
-      
       await new Promise(resolve => {
         let progress = 0;
         const interval = setInterval(() => {
@@ -47,27 +64,42 @@ const ImageGenerator = () => {
           }
         }, 100);
       });
-      
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${timestamp}&model=flux&nologo=true`;
-      
-      await new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          setDownloadProgress(100);
-          setTimeout(() => {
-            setDownloadProgress(0);
-            resolve();
-          }, 300);
-        };
-        img.onerror = reject;
-        img.src = imageUrl;
+
+      const response = await fetch('http://localhost:8000/api/ai/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: prompt.trim(), userId: user.id }),
       });
+
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(
+          errorPayload?.error || `Image request failed with status ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      setDownloadProgress(100);
+      setImage(data.imageUrl);
       
-      setImage(imageUrl);
-      
+      setHistory((prev) => [data.data, ...prev]);
+
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          setDownloadProgress(0);
+          resolve();
+        }, 300);
+      });
     } catch (error) {
       console.error('Error generating image:', error);
-      setError('Failed to generate image. Please try again with a different prompt.');
+      setError(
+        error?.message?.includes('POLLINATIONS_API_KEY')
+          ? 'Backend image API key is missing. Add POLLINATIONS_API_KEY to server/.env.'
+          : 'Failed to generate image. Please try again with a different prompt.'
+      );
     } finally {
       setLoading(false);
     }
@@ -86,6 +118,11 @@ const ImageGenerator = () => {
     try {
       setDownloadProgress(0);
       const response = await fetch(image);
+
+      if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       
@@ -116,6 +153,22 @@ const ImageGenerator = () => {
   const generateNewVariation = () => {
     if (prompt.trim()) {
       generateImage();
+    }
+  };
+
+  const deleteHistoryItem = async (id) => {
+    if (!window.confirm('Delete this image from history?')) return;
+    try {
+      const res = await fetch(`http://localhost:8000/api/ai/history/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      });
+      if (res.ok) {
+        setHistory(prev => prev.filter(item => item.id !== id));
+      }
+    } catch (err) {
+      console.error('Failed to delete history', err);
     }
   };
 
@@ -161,7 +214,7 @@ const ImageGenerator = () => {
                 📷
               </motion.div>
               <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                GalleryHub
+                PixelHub
               </span>
             </Link>
           </div>
@@ -194,18 +247,32 @@ const ImageGenerator = () => {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl pt-24 mx-auto px-6 py-8">
-        <motion.div 
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-        >
-          <motion.div variants={itemVariants} className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-              AI Image Generator
-            </h1>
+      <div className="max-w-7xl pt-24 mx-auto px-6 py-8 flex gap-8">
+        {/* Main Generator Column */}
+        <div className={`transition-all duration-300 ${showHistory ? 'w-full lg:w-2/3' : 'w-full'}`}>
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            <motion.div variants={itemVariants} className="text-center mb-12 relative">
+              {isSignedIn && (
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="absolute right-0 top-0 text-indigo-600 bg-indigo-50 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors hidden lg:flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                  </svg>
+                  {showHistory ? 'Hide History' : 'Show History'}
+                </button>
+              )}
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                AI Image Generator
+              </h1>
             <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
-              {user.firstName}, Transform your ideas into stunning visuals with our AI-powered image generation
+              {user?.firstName ? `${user.firstName}, ` : ''}
+              Transform your ideas into stunning visuals with our AI-powered image generation
             </p>
           </motion.div>
 
@@ -491,6 +558,65 @@ const ImageGenerator = () => {
             </div>
           </motion.div>
         </motion.div>
+        </div>
+        {/* History Sidebar */}
+        <AnimatePresence>
+          {showHistory && isSignedIn && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="hidden lg:block w-1/3 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex-col h-[calc(100vh-140px)] sticky top-28"
+            >
+              <div className="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <h3 className="font-bold text-gray-800 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                  </svg>
+                  Generation History
+                </h3>
+                <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full font-medium">
+                  {history.length} items
+                </span>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {history.length === 0 ? (
+                  <div className="text-center text-gray-500 mt-10">
+                    <p>No history yet.</p>
+                    <p className="text-sm">Start generating images!</p>
+                  </div>
+                ) : (
+                  history.map((item) => (
+                    <div key={item.id} className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-indigo-300 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                      <img 
+                        src={`http://localhost:8000/uploads/${item.image_url}`} 
+                        alt={item.prompt}
+                        className="w-full h-40 object-cover"
+                        onClick={() => {
+                          setImage(`http://localhost:8000/uploads/${item.image_url}`);
+                          setPrompt(item.prompt);
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
+                        <p className="text-white text-xs line-clamp-2 mb-2">{item.prompt}</p>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); deleteHistoryItem(item.id); }}
+                          className="self-end bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-md"
+                          title="Delete from history"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

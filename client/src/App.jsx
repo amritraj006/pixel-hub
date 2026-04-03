@@ -26,7 +26,7 @@ const App = () => {
       <Toaster richColors position="top-center" />
 
       {!isImgGenRoute && <Navbar />}
-      <div className="pt-16 ">
+      <div className={isImgGenRoute ? "top-0 absolute w-full" : "pt-16 "}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/category/:subcategory" element={<SubCategoryPage />} />
@@ -39,13 +39,8 @@ const App = () => {
           <Route path='/l' element={<UserProfilePosts />} />
           <Route path="/my-dashboard" element={<Dashboard />} />
           <Route path="/generator" element={<GeneratorLanding />} />
+          <Route path="/image-generator" element={<ImageGenerator />} />
         </Routes>
-
-      </div>
-      <div className="top-0 absolute w-full">
-      <Routes>
-        <Route path="/image-generator" element={<ImageGenerator />} />
-      </Routes>
       </div>
       {!isImgGenRoute &&  <Footer />}
     </div>

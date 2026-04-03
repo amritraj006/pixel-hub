@@ -1,21 +1,18 @@
-const express = require('express');
-const app = express();
-const mainRoutes = require('./routes/mainRoutes');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const path = require('path');
+const app = require('./app');
+const initializeDatabase = require('./config/initDb');
 
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const PORT = Number(process.env.PORT) || 8000;
 
-// Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+async function startServer() {
+  try {
+    await initializeDatabase();
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
 
-// All routes
-app.use('/', mainRoutes);
-
-// Start server
-app.listen(8000, () => {
-  console.log('Server running on http://localhost:8000');
-});
+startServer();

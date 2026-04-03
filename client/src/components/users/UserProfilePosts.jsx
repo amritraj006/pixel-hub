@@ -9,7 +9,8 @@ const UserProfilePosts = () => {
 
   const fetchUserPosts = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/upload/user-posts?user_email=${user?.primaryEmailAddress?.emailAddress}`);
+      const userId = user?.id || '';
+      const res = await fetch(`http://localhost:8000/upload/user-posts?user_email=${user?.primaryEmailAddress?.emailAddress}&user_id=${userId}`);
       const data = await res.json();
       setUserPosts(data);
     } catch (error) {
