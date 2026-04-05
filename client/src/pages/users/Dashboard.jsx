@@ -53,7 +53,7 @@ const Dashboard = () => {
   // Fetch user stats
   const fetchUserStats = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/upload/user-stats?user_email=${user?.primaryEmailAddress?.emailAddress}`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/upload/user-stats?user_email=${user?.primaryEmailAddress?.emailAddress}`);
       setUserStats(res.data);
     } catch (err) {
       console.error('Failed to fetch stats:', err);
@@ -64,7 +64,7 @@ const Dashboard = () => {
   const fetchUserPosts = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/upload/user-posts?user_email=${user?.primaryEmailAddress?.emailAddress}`
+        `${import.meta.env.VITE_BACKEND_URL}/upload/user-posts?user_email=${user?.primaryEmailAddress?.emailAddress}`
       );
       setUserPosts(res.data);
     } catch (error) {
@@ -85,7 +85,7 @@ const Dashboard = () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
 
     try {
-      await axios.delete(`http://localhost:8000/upload/delete-post/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/upload/delete-post/${id}`, {
         data: { image_url: imageUrl }
       });
       setUserPosts(userPosts.filter(post => post.id !== id));
@@ -115,7 +115,7 @@ const Dashboard = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:8000/upload/edit-post/${editingPost.id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/upload/edit-post/${editingPost.id}`,
         formData
       );
       setEditingPost(null);
@@ -276,7 +276,7 @@ const Dashboard = () => {
                         >
                           <div className="relative h-48 overflow-hidden">
                             <img
-                              src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
+                              src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}
                               alt={post.title}
                               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                             />

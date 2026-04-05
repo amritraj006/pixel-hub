@@ -88,7 +88,7 @@ const UploadForm = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:8000/upload/upload-image',
+        `${import.meta.env.VITE_BACKEND_URL}/upload/upload-image`,
         data,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );

@@ -32,7 +32,7 @@ const ImageDetails = () => {
   useEffect(() => {
     if (!currentImage || !isSignedIn) return;
 
-    fetch(`http://localhost:8000/api/likes/is-liked?user_email=${userEmail}&category=${category}&title=${currentImage.title}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/likes/is-liked?user_email=${userEmail}&category=${category}&title=${currentImage.title}`)
       .then(res => res.json())
       .then(data => setIsLiked(data.liked))
       .catch(err => console.error(err));
@@ -52,7 +52,7 @@ const ImageDetails = () => {
     const method = isLiked ? 'DELETE' : 'POST';
 
     try {
-      const response = await fetch(`http://localhost:8000/api/likes/${endpoint}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/likes/${endpoint}`, {
         method,
         headers: {
           'Content-Type': 'application/json',

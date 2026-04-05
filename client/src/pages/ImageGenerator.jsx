@@ -23,7 +23,7 @@ const ImageGenerator = () => {
   const fetchHistory = async () => {
     if (!isSignedIn || !user) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/ai/history/${user.id}`);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai/history/${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -65,7 +65,7 @@ const ImageGenerator = () => {
         }, 100);
       });
 
-      const response = await fetch('http://localhost:8000/api/ai/generate-image', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai/generate-image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const ImageGenerator = () => {
   const deleteHistoryItem = async (id) => {
     if (!window.confirm('Delete this image from history?')) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/ai/history/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai/history/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id })
@@ -590,11 +590,11 @@ const ImageGenerator = () => {
                   history.map((item) => (
                     <div key={item.id} className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-indigo-300 transition-all cursor-pointer shadow-sm hover:shadow-md">
                       <img 
-                        src={item.image_url?.startsWith('http') ? item.image_url : `http://localhost:8000/uploads/${item.image_url}`} 
+                        src={item.image_url?.startsWith('http') ? item.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${item.image_url}`} 
                         alt={item.prompt}
                         className="w-full h-40 object-cover"
                         onClick={() => {
-                          setImage(item.image_url?.startsWith('http') ? item.image_url : `http://localhost:8000/uploads/${item.image_url}`);
+                          setImage(item.image_url?.startsWith('http') ? item.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${item.image_url}`);
                           setPrompt(item.prompt);
                         }}
                       />

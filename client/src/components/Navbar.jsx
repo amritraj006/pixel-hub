@@ -16,7 +16,7 @@ const Navbar = () => {
     const fetchLikeCount = () => {
       if (user?.primaryEmailAddress?.emailAddress) {
         const email = user.primaryEmailAddress.emailAddress;
-        fetch(`http://localhost:8000/api/likes/like-count?user_email=${email}`)
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/likes/like-count?user_email=${email}`)
           .then(res => res.json())
           .then(data => setLikeCount(data.count))
           .catch(err => console.error('Failed to fetch like count:', err));

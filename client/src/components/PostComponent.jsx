@@ -16,7 +16,7 @@ const PostComponent = () => {
     const fetchPosts = async () => {
       try {
         const userId = user?.id || '';
-        const res = await axios.get(`http://localhost:8000/upload/latest-posts?user_id=${userId}`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/upload/latest-posts?user_id=${userId}`);
         setLatestPosts(res.data);
       } catch (err) {
         console.error('Failed to fetch latest posts:', err);

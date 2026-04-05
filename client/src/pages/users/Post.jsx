@@ -19,7 +19,7 @@ const Post = () => {
     const fetchImages = async () => {
       try {
         const userId = user?.id || '';
-        const res = await axios.get(`http://localhost:8000/upload/fetch-images?user_id=${userId}`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/upload/fetch-images?user_id=${userId}`);
         setImages(res.data);
       } catch (err) {
         console.error('Error fetching images:', err);

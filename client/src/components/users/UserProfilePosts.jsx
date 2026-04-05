@@ -10,7 +10,7 @@ const UserProfilePosts = () => {
   const fetchUserPosts = async () => {
     try {
       const userId = user?.id || '';
-      const res = await fetch(`http://localhost:8000/upload/user-posts?user_email=${user?.primaryEmailAddress?.emailAddress}&user_id=${userId}`);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload/user-posts?user_email=${user?.primaryEmailAddress?.emailAddress}&user_id=${userId}`);
       const data = await res.json();
       setUserPosts(data);
     } catch (error) {
@@ -27,7 +27,7 @@ const UserProfilePosts = () => {
     if (!confirm) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/upload/delete-post/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload/delete-post/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image_url: imageUrl })
@@ -61,7 +61,7 @@ const UserProfilePosts = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:8000/upload/edit-post/${editingPost.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload/edit-post/${editingPost.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -86,7 +86,7 @@ const UserProfilePosts = () => {
         userPosts.map((post) => (
           <div key={post.id} className="bg-white shadow-md rounded-lg overflow-hidden">
             <img
-              src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
+              src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}
               alt={post.title}
               className="w-full h-48 object-cover"
             />

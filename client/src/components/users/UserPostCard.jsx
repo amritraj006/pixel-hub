@@ -23,7 +23,7 @@ const UserPostCard = ({ post, onDelete }) => {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/comments/${post.id}`);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/comments/${post.id}`);
       setComments(res.data.data || []);
     } catch (err) {
       console.error('Failed to fetch comments', err);
@@ -45,7 +45,7 @@ const UserPostCard = ({ post, onDelete }) => {
         parentId: replyingTo?.id || null
       };
 
-      const res = await axios.post('http://localhost:8000/api/comments', payload);
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/comments`, payload);
       setComments([...comments, res.data.data]);
       setNewComment('');
       setReplyingTo(null);
@@ -59,7 +59,7 @@ const UserPostCard = ({ post, onDelete }) => {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      await axios.delete(`http://localhost:8000/api/comments/${commentId}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/comments/${commentId}`, {
         data: { userId: user.id }
       });
       setComments(comments.filter(c => c.id !== commentId && c.parent_id !== commentId));
@@ -77,7 +77,7 @@ const UserPostCard = ({ post, onDelete }) => {
 
   const handleLike = async () => {
     try {
-      const res = await axios.post('http://localhost:8000/upload/toggle-like', {
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/toggle-like`, {
         imageId: post.id,
         userId: user.id,
       });
@@ -100,7 +100,7 @@ const UserPostCard = ({ post, onDelete }) => {
   const handleDownload = async () => {
     try {
       const toastId = toast.loading('Downloading image...');
-      const downloadUrl = post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`;
+      const downloadUrl = post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`;
       const response = await fetch(downloadUrl);
       const blob = await response.blob();
       saveAs(blob, post.title || 'creative-image');
@@ -117,7 +117,7 @@ const UserPostCard = ({ post, onDelete }) => {
     setIsDeleting(true);
     try {
       const toastId = toast.loading('Deleting post...');
-      await axios.delete(`http://localhost:8000/upload/delete-post/${post.id}`);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/upload/delete-post/${post.id}`);
       toast.success('Post deleted successfully', { id: toastId });
       if (onDelete) onDelete(post.id);
     } catch (error) {
@@ -188,7 +188,7 @@ const UserPostCard = ({ post, onDelete }) => {
 
         <div className="w-full bg-gray-100 flex items-center justify-center relative group overflow-hidden">
           <img
-            src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
+            src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}
             alt={post.title}
             onClick={() => setShowFullImage(true)}
             className="w-full h-auto max-h-[700px] object-cover cursor-pointer transition-transform duration-700 ease-in-out group-hover:scale-105"
@@ -362,7 +362,7 @@ const UserPostCard = ({ post, onDelete }) => {
               className="relative max-w-5xl w-full max-h-[90vh] flex justify-center"
             >
               <img
-                src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
+                src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}
                 alt={post.title}
                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
               />

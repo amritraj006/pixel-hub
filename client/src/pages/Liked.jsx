@@ -19,7 +19,7 @@ const Liked = () => {
     if (!userEmail) return;
 
     setLoading(true);
-    fetch(`http://localhost:8000/api/likes/liked-images?user_email=${userEmail}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/likes/liked-images?user_email=${userEmail}`)
       .then(res => res.json())
       .then(data => {
         const liked = data.map(item => {
@@ -40,7 +40,7 @@ const Liked = () => {
   const handleRemoveLike = async (image) => {
     setRemovingId(image.imageId);
     try {
-      const res = await fetch('http://localhost:8000/api/likes/unlike', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/likes/unlike`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
