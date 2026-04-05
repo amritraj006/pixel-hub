@@ -47,7 +47,7 @@ const PostComponent = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-4 inline-block">
+        <h2 className="text-4xl font-bold md:text-5xl text-gray-900 mb-4 inline-block tracking-tight">
           Latest Community Posts
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -59,7 +59,7 @@ const PostComponent = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="flex flex-col space-y-12 max-w-xl md:max-w-2xl mx-auto w-full"
+        className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full max-w-none"
       >
         {latestPosts.map((post) => (
           <UserPostCard 
@@ -78,7 +78,7 @@ const PostComponent = () => {
       >
         <motion.button
           onClick={() => navigate('/post')}
-            className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center px-8 py-3 bg-gray-900 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 hover:bg-black"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >

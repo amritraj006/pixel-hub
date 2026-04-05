@@ -590,11 +590,11 @@ const ImageGenerator = () => {
                   history.map((item) => (
                     <div key={item.id} className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-indigo-300 transition-all cursor-pointer shadow-sm hover:shadow-md">
                       <img 
-                        src={`http://localhost:8000/uploads/${item.image_url}`} 
+                        src={item.image_url?.startsWith('http') ? item.image_url : `http://localhost:8000/uploads/${item.image_url}`} 
                         alt={item.prompt}
                         className="w-full h-40 object-cover"
                         onClick={() => {
-                          setImage(`http://localhost:8000/uploads/${item.image_url}`);
+                          setImage(item.image_url?.startsWith('http') ? item.image_url : `http://localhost:8000/uploads/${item.image_url}`);
                           setPrompt(item.prompt);
                         }}
                       />

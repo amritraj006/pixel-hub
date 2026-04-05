@@ -41,7 +41,7 @@ const AllImages = () => {
     <div className="pt-24 px-6 md:px-20 bg-white min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
             Explore Our Gallery
           </h1>
           <p className="text-lg text-gray-600">
@@ -58,7 +58,7 @@ const AllImages = () => {
               <input
                 type="text"
                 placeholder="Search images or categories..."
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
+                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl bg-gray-50 shadow-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -75,12 +75,12 @@ const AllImages = () => {
             <div className="relative w-full md:w-auto">
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 w-full justify-center md:w-auto"
+                className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all duration-300 w-full justify-center md:w-auto"
               >
                 <Filter className="h-5 w-5 text-gray-700" />
                 <span>Filter</span>
                 {selectedCategories.length > 0 && (
-                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-indigo-600 rounded-full">
+                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-gray-900 rounded-full">
                     {selectedCategories.length}
                   </span>
                 )}
@@ -93,7 +93,7 @@ const AllImages = () => {
                     {selectedCategories.length > 0 && (
                       <button
                         onClick={clearFilters}
-                        className="text-sm text-indigo-600 hover:text-indigo-800"
+                        className="text-sm text-gray-500 hover:text-gray-900"
                       >
                         Clear all
                       </button>
@@ -105,7 +105,7 @@ const AllImages = () => {
                         <input
                           id={`filter-${category}`}
                           type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
                           checked={selectedCategories.includes(category)}
                           onChange={() => toggleCategory(category)}
                         />
@@ -128,12 +128,12 @@ const AllImages = () => {
               {selectedCategories.map((category) => (
                 <span
                   key={category}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
                 >
                   {category}
                   <button
                     type="button"
-                    className="flex-shrink-0 ml-1.5 inline-flex text-indigo-600 hover:text-indigo-900"
+                    className="flex-shrink-0 ml-1.5 inline-flex text-gray-500 hover:text-gray-900"
                     onClick={() => toggleCategory(category)}
                   >
                     <X className="h-4 w-4" />
@@ -151,7 +151,7 @@ const AllImages = () => {
           {filteredImages.length === 0 && (
             <button
               onClick={clearFilters}
-              className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center"
+              className="text-sm text-gray-500 hover:text-gray-900 flex items-center"
             >
               <X className="h-4 w-4 mr-1" />
               Clear filters
@@ -160,7 +160,7 @@ const AllImages = () => {
         </div>
 
         {filteredImages.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 mb-16">
             {filteredImages.map((image) => (
               <ImageCard 
                 key={`${image.category}-${image.imageId}`} 
@@ -179,7 +179,7 @@ const AllImages = () => {
             <p className="text-gray-500 mb-6">Try adjusting your search or filter criteria</p>
             <button
               onClick={clearFilters}
-              className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:scale-105"
+              className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-gray-900 hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-300 hover:scale-105"
             >
               Clear Filters
             </button>

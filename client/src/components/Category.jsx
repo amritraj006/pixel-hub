@@ -83,7 +83,7 @@ const Category = () => {
         <div className="text-center mt-8">
           <button
             onClick={() => navigate('/all-categories')}
-            className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center px-8 py-3 bg-gray-900 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 hover:bg-black"
           >
             Explore All Categories
             <ArrowRight className="h-5 w-5 ml-2" />

@@ -332,18 +332,22 @@ const Post = () => {
 
         {/* Gallery Grid */}
         {filteredImages.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             <AnimatePresence>
               {filteredImages.map((img) => (
                 <motion.div
                   key={img.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4 }}
+                  className="break-inside-avoid"
                   layout
                 >
-                  <UserPostCard post={img} />
+                  <UserPostCard 
+                    post={img} 
+                    onDelete={(deletedId) => setImages(prev => prev.filter(p => p.id !== deletedId))}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>

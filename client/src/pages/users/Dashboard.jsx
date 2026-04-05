@@ -152,7 +152,7 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-4xl font-bold text-gray-800 mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600"
+          className="text-4xl font-bold text-gray-900 mb-8 tracking-tight"
         >
           Dashboard
         </motion.h1>
@@ -166,7 +166,7 @@ const Dashboard = () => {
                 className={({ selected }) =>
                   `w-full py-3 px-4 text-sm font-medium rounded-lg transition-all duration-300 ${
                     selected
-                      ? 'bg-indigo-600 text-white shadow-md'
+                      ? 'bg-gray-900 text-white shadow-sm'
                       : 'text-gray-500 hover:bg-gray-100'
                   }`
                 }
@@ -229,10 +229,10 @@ const Dashboard = () => {
                         className="grid grid-cols-1 md:grid-cols-2 gap-6"
                       >
                         {[
-                          { title: 'Total Posts', value: userStats?.totalPosts || 0, color: 'bg-indigo-100 text-indigo-800' },
-                          { title: 'Total Likes', value: userStats?.totalLikes || 0, color: 'bg-purple-100 text-purple-800' },
-                          { title: 'Popular Category', value: userStats?.popularCategory || 'N/A', color: 'bg-green-100 text-green-800' },
-                          { title: 'Engagement Rate', value: userStats?.engagementRate ? `${userStats.engagementRate}%` : '0%', color: 'bg-amber-100 text-amber-800' }
+                          { title: 'Total Posts', value: userStats?.totalPosts || 0, color: 'bg-gray-50 border border-gray-100 text-gray-900' },
+                          { title: 'Total Likes', value: userStats?.totalLikes || 0, color: 'bg-gray-50 border border-gray-100 text-gray-900' },
+                          { title: 'Popular Category', value: userStats?.popularCategory || 'N/A', color: 'bg-gray-50 border border-gray-100 text-gray-900' },
+                          { title: 'Engagement Rate', value: userStats?.engagementRate ? `${userStats.engagementRate}%` : '0%', color: 'bg-gray-50 border border-gray-100 text-gray-900' }
                         ].map((stat, index) => (
                           <motion.div 
                             key={index}
@@ -265,19 +265,18 @@ const Dashboard = () => {
                       variants={containerVariants}
                       initial="hidden"
                       animate="visible"
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                      className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6"
                     >
                       {userPosts.map((post) => (
                         <motion.div 
                           key={post.id}
-                          variants={itemVariants}
+                          variants={{ ...itemVariants, ...cardVariants }}
                           whileHover="hover"
-                          variants={cardVariants}
-                          className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300"
+                          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 break-inside-avoid"
                         >
                           <div className="relative h-48 overflow-hidden">
                             <img
-                              src={`http://localhost:8000/uploads/${post.image_url}`}
+                              src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
                               alt={post.title}
                               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                             />
@@ -287,21 +286,21 @@ const Dashboard = () => {
                           </div>
                           <div className="p-4">
                             <h2 className="text-xl font-semibold text-gray-800">{post.title}</h2>
-                            <span className="inline-block mt-2 px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full">
+                            <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">
                               {post.category}
                             </span>
                             <div className="flex justify-between mt-4">
                               <motion.button
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => openEditModal(post)}
-                                className="flex items-center px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                className="flex items-center px-4 py-2 bg-gray-100 text-gray-900 font-medium rounded-lg hover:bg-gray-200 transition-colors"
                               >
                                 <FiEdit className="mr-1" /> Edit
                               </motion.button>
                               <motion.button
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => handleDelete(post.id, post.image_url)}
-                                className="flex items-center px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                                className="flex items-center px-4 py-2 bg-red-50 text-red-600 font-medium rounded-lg hover:bg-red-100 transition-colors"
                               >
                                 <FiTrash2 className="mr-1" /> Delete
                               </motion.button>
@@ -362,7 +361,7 @@ const Dashboard = () => {
                       name="title"
                       value={formData.title}
                       onChange={handleEditChange}
-                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all font-medium"
                       required
                     />
                   </div>
@@ -373,7 +372,7 @@ const Dashboard = () => {
                       name="category"
                       value={formData.category}
                       onChange={handleEditChange}
-                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all font-medium"
                       required
                     />
                   </div>
@@ -383,7 +382,7 @@ const Dashboard = () => {
                       name="description"
                       value={formData.description}
                       onChange={handleEditChange}
-                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all font-medium"
                       rows="4"
                       required
                     />
@@ -400,7 +399,7 @@ const Dashboard = () => {
                     <motion.button
                       type="submit"
                       whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center"
+                      className="px-5 py-2.5 bg-gray-900 text-white rounded-full hover:bg-black transition-colors font-medium flex items-center"
                     >
                       <FiSave className="mr-1" /> Save Changes
                     </motion.button>

@@ -70,7 +70,7 @@ const Navbar = () => {
               >
                 📷
               </motion.div>
-              <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold hidden sm:inline-block text-gray-900 tracking-tight">
                 PixelHub
               </span>
             </Link>
@@ -82,7 +82,7 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-gray-50 transition-all duration-200 group"
+                className="flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 group"
               >
                 {link.icon}
                 <span className="group-hover:translate-x-0.5 transition-transform">
@@ -101,18 +101,18 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleProtectedRoute(action.path)}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-indigo-600 transition-all duration-200 relative group"
+                className="p-2.5 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-all duration-200 relative group"
                 title={action.name}
               >
                 <div className="relative">
                   <action.icon className="w-5 h-5" />
                   {action.count > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-xs px-1.5 rounded-full">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                       {action.count}
                     </span>
                   )}
                 </div>
-                <span className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-md">
                   {action.name}
                 </span>
               </motion.button>
@@ -124,7 +124,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={openSignIn}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                className="bg-gray-900 hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Sign In
               </motion.button>
@@ -133,8 +133,8 @@ const Navbar = () => {
                 <UserButton 
                   appearance={{
                     elements: {
-                      userButtonAvatarBox: "w-8 h-8 ring-2 ring-indigo-500/30 hover:ring-indigo-500/50 transition-all duration-200",
-                      userButtonPopoverCard: "shadow-lg rounded-xl border border-gray-100",
+                      userButtonAvatarBox: "w-9 h-9 ring-2 ring-gray-100 hover:ring-gray-300 transition-all duration-200",
+                      userButtonPopoverCard: "shadow-2xl rounded-2xl border border-gray-100",
                     }
                   }}
                   afterSignOutUrl="/"
@@ -149,7 +149,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-indigo-600 transition-all duration-200"
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-all duration-200"
             >
               {isOpen ? (
                 <X className="w-6 h-6" />
@@ -182,7 +182,7 @@ const Navbar = () => {
                   <Link
                     to={link.path}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50/50 transition-all duration-200 mx-2"
+                    className="flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 mx-2"
                   >
                     {link.icon}
                     <span className="ml-3">{link.name}</span>
@@ -199,12 +199,12 @@ const Navbar = () => {
                 >
                   <button
                     onClick={() => { setIsOpen(false); handleProtectedRoute(action.path); }}
-                    className="flex items-center w-full px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50/50 transition-all duration-200 mx-2"
+                    className="flex items-center w-full px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 mx-2"
                   >
                     <action.icon className="w-5 h-5" />
                     <span className="ml-3">{action.name}</span>
                     {action.count > 0 && (
-                      <span className="ml-auto bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-full">
+                      <span className="ml-auto bg-gray-900 text-white text-xs px-2 py-0.5 rounded-full">
                         {action.count}
                       </span>
                     )}
@@ -221,7 +221,7 @@ const Navbar = () => {
                 >
                   <button
                     onClick={() => { setIsOpen(false); openSignIn(); }}
-                    className="w-full px-4 py-3 rounded-lg text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="w-full px-4 py-3 rounded-xl text-base font-medium text-white bg-gray-900 hover:bg-black transition-all duration-200 shadow-sm"
                   >
                     Sign In
                   </button>

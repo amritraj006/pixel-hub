@@ -27,7 +27,7 @@ const Footer = () => {
             <div className="flex items-center gap-2">
               <Link to="/" className="flex items-center space-x-2 group transition-all duration-200">
                     <div className="text-2xl transition-transform duration-300 group-hover:scale-110">📷</div>
-                    <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">PixelHub</span>
+                    <span className="text-xl font-bold hidden sm:inline-block text-gray-900 tracking-tight">PixelHub</span>
                 </Link>
               
             </div>
@@ -85,7 +85,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/all-images" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   All Images
@@ -95,7 +95,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/popular" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   Popular
@@ -105,7 +105,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/categories" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   Categories
@@ -115,7 +115,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/liked" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   Your Favorites
@@ -137,7 +137,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/category/nature" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   Nature
@@ -147,7 +147,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/category/architecture" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   Architecture
@@ -157,7 +157,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/category/technology" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   Technology
@@ -167,7 +167,7 @@ const Footer = () => {
                 <motion.a 
                   whileHover={{ x: 5 }}
                   href="/category/people" 
-                  className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   <ArrowUpRight className="w-4 h-4 mr-2" />
                   People
@@ -198,7 +198,7 @@ const Footer = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all"
+                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-black transition-all"
               >
                 Subscribe
               </motion.button>
@@ -217,14 +217,14 @@ const Footer = () => {
             &copy; {currentYear} PixelGallery. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <a href="/privacy" className="text-gray-500 hover:text-indigo-600 transition-colors">Privacy Policy</a>
-            <a href="/terms" className="text-gray-500 hover:text-indigo-600 transition-colors">Terms of Service</a>
-            <a href="/cookies" className="text-gray-500 hover:text-indigo-600 transition-colors">Cookies</a>
+            <a href="/privacy" className="text-gray-500 hover:text-gray-900 transition-colors">Privacy Policy</a>
+            <a href="/terms" className="text-gray-500 hover:text-gray-900 transition-colors">Terms of Service</a>
+            <a href="/cookies" className="text-gray-500 hover:text-gray-900 transition-colors">Cookies</a>
           </div>
           <motion.button
             onClick={scrollToTop}
             whileHover={{ y: -3 }}
-            className="mt-4 md:mt-0 flex items-center text-indigo-600 hover:text-indigo-800 transition-colors"
+            className="mt-4 md:mt-0 flex items-center text-gray-900 hover:text-black transition-colors"
           >
             Back to top
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">

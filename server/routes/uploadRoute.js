@@ -1,16 +1,19 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../cloudinary');
 
 const uploadController = require('../controllers/uploadController');
 const asyncHandler = require('../middlewares/asyncHandler');
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
-  filename: (req, file, cb) =>
-    cb(null, `${Date.now()}${path.extname(file.originalname)}`),
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'pixel-hub-uploads',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+  },
 });
 
 const upload = multer({ storage });

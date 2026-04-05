@@ -1,20 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3B82F6;       /* Light Blue - Main accent */
-  --color-primary-dull: #2563EB;  /* Slightly darker Blue */
+  --color-primary: #0F172A;       /* Slate 900 for neutral contrast */
+  --color-primary-dull: #334155;  /* Slate 700 */
 }
 
-
 * {
-    font-family: "Outfit", sans-serif;
+    font-family: 'Inter', sans-serif;
     scrollbar-width: thin;
-    scrollbar-color: #787777 #1e1e1e;
+    scrollbar-color: #cbd5e1 #f8fafc;
 }
 
 body {
-    color: #09090B;
-    background-color: #fafafa;
+    color: #111827;
+    background-color: #f9fafb; /* Lighter cleaner gray */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
 }

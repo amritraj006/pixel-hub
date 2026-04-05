@@ -1,5 +1,6 @@
 const fs = require('fs/promises');
 const path = require('path');
+const cloudinary = require('../cloudinary');
 
 const uploadModel = require('../models/uploadModel');
 const createHttpError = require('../utils/httpError');
@@ -14,7 +15,7 @@ async function uploadImage({ title, category, description, uploadedBy, file }) {
     category,
     description,
     uploadedBy,
-    imageUrl: file.filename,
+    imageUrl: file.path,
   });
 }
 
@@ -45,13 +46,24 @@ async function removePost(id) {
     throw createHttpError(404, 'Post not found');
   }
 
-  const filePath = path.join(__dirname, '..', 'uploads', deletedPost.image_url);
+  if (deletedPost.image_url.includes('cloudinary.com')) {
+    try {
+      const urlParts = deletedPost.image_url.split('/');
+      const filename = urlParts[urlParts.length - 1];
+      const publicId = `pixel-hub-uploads/${filename.split('.')[0]}`;
+      await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+      console.warn('Unable to delete image from Cloudinary:', deletedPost.image_url, error.message);
+    }
+  } else {
+    const filePath = path.join(__dirname, '..', 'uploads', deletedPost.image_url);
 
-  try {
-    await fs.unlink(filePath);
-  } catch (error) {
-    if (error.code !== 'ENOENT') {
-      console.warn('Unable to delete image file:', filePath, error.message);
+    try {
+      await fs.unlink(filePath);
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        console.warn('Unable to delete image file:', filePath, error.message);
+      }
     }
   }
 }

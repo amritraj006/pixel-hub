@@ -125,7 +125,7 @@ const UploadForm = () => {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <Toaster position="top-center" />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -157,7 +157,7 @@ const UploadForm = () => {
               whileTap={{ scale: 0.98 }}
             >
               <SignInButton mode="modal">
-                <button className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium flex items-center justify-center space-x-2 hover:shadow-lg transition-all">
+                <button className="w-full py-3 px-6 bg-gray-900 text-white rounded-full font-medium flex items-center justify-center space-x-2 hover:shadow-lg transition-all hover:bg-black">
                   <FiLogIn className="h-5 w-5" />
                   <span>Sign In to Upload</span>
                 </button>
@@ -174,7 +174,7 @@ const UploadForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Toaster
         position="top-center"
         reverseOrder={false}
@@ -229,7 +229,7 @@ const UploadForm = () => {
                   placeholder="Enter a descriptive title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-5 py-3 text-gray-700 bg-gray-100 rounded-lg border border-transparent focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition duration-200"
+                  className="w-full px-5 py-3 text-gray-700 bg-white rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition duration-200 shadow-sm"
                 />
               </motion.div>
 
@@ -244,7 +244,7 @@ const UploadForm = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-5 py-3 text-gray-700 bg-gray-100 rounded-lg border border-transparent focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition duration-200 appearance-none"
+                  className="w-full px-5 py-3 text-gray-700 bg-white rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition duration-200 appearance-none shadow-sm"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
@@ -268,7 +268,7 @@ const UploadForm = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
-                  className="w-full px-5 py-3 text-gray-700 bg-gray-100 rounded-lg border border-transparent focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition duration-200"
+                  className="w-full px-5 py-3 text-gray-700 bg-white rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition duration-200 shadow-sm"
                 />
               </motion.div>
 
@@ -322,7 +322,7 @@ const UploadForm = () => {
                       onHoverStart={() => setIsHovered(true)}
                       onHoverEnd={() => setIsHovered(false)}
                       onClick={triggerFileInput}
-                      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-300 ${isHovered ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+                      className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${isHovered ? 'border-gray-900 bg-gray-50' : 'border-gray-300 bg-white'}`}
                     >
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <motion.div
@@ -335,7 +335,7 @@ const UploadForm = () => {
                             ease: "easeInOut"
                           }}
                         >
-                          <FaCloudUploadAlt className={`h-10 w-10 text-blue-500 ${isHovered ? 'animate-pulse' : ''}`} />
+                          <FaCloudUploadAlt className={`h-10 w-10 text-gray-400 ${isHovered ? 'animate-pulse text-gray-900' : ''}`} />
                         </motion.div>
                         <div>
                           <p className="text-sm font-medium text-gray-700">
@@ -362,7 +362,7 @@ const UploadForm = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={uploading}
-                  className={`w-full py-4 px-6 rounded-xl font-medium text-white transition-all duration-300 ${uploading ? 'bg-blue-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg'}`}
+                  className={`w-full py-4 px-6 rounded-full font-medium text-white transition-all duration-300 shadow-sm ${uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-black'}`}
                 >
                   {uploading ? (
                     <span className="flex items-center justify-center space-x-2">

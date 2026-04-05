@@ -86,7 +86,7 @@ const UserProfilePosts = () => {
         userPosts.map((post) => (
           <div key={post.id} className="bg-white shadow-md rounded-lg overflow-hidden">
             <img
-              src={`http://localhost:8000/uploads/${post.image_url}`}
+              src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
               alt={post.title}
               className="w-full h-48 object-cover"
             />

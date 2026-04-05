@@ -142,7 +142,7 @@ const ImageDetails = () => {
       <div className="pt-6 px-6 md:px-12 lg:px-24">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors group"
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors group font-medium"
         >
           <ArrowLeft 
             className="mr-1 group-hover:-translate-x-1 transition-transform" 
@@ -161,7 +161,7 @@ const ImageDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <motion.div 
             whileHover={{ scale: 1.01 }}
-            className="relative rounded-2xl overflow-hidden shadow-xl bg-gray-50"
+            className="relative rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 bg-white"
           >
             <div className="aspect-[4/3] w-full flex items-center justify-center">
               <img
@@ -192,7 +192,7 @@ const ImageDetails = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleDownload}
                 disabled={isDownloading}
-                className="p-3 rounded-full backdrop-blur-sm bg-white/90 text-gray-800 shadow-md hover:bg-indigo-100 transition-colors"
+                className="p-4 rounded-full backdrop-blur-md bg-white/90 text-gray-900 shadow-sm hover:shadow-md transition-all"
                 aria-label="Download"
               >
                 {isDownloading ? (
@@ -223,10 +223,10 @@ const ImageDetails = () => {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-4"
             >
-              <span className="px-3 py-1 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 rounded-full text-sm font-medium capitalize">
+              <span className="px-4 py-1.5 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold capitalize">
                 {currentImage.category}
               </span>
-              <span className="text-gray-500 flex items-center gap-1">
+              <span className="text-gray-500 flex items-center gap-1.5 text-sm font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -254,15 +254,15 @@ const ImageDetails = () => {
             >
               <button
                 onClick={() => navigate(`/category/${currentImage.category}`)}
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:bg-black"
               >
                 View All {currentImage.category} Images
-                <ChevronRight className="ml-2" size={20} />
+                <ChevronRight className="ml-1" size={20} />
               </button>
               
               <button
                 onClick={() => navigate('/all-categories')}
-                className="inline-flex items-center px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-[1.02]"
+                className="inline-flex items-center px-6 py-3 bg-white border border-gray-200 text-gray-900 rounded-full font-medium hover:bg-gray-50 transition-all duration-300"
               >
                 Explore All Categories
               </button>
@@ -281,12 +281,12 @@ const ImageDetails = () => {
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                More from <span className="text-indigo-600 capitalize">{category}</span>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                More from <span className="text-gray-600 capitalize">{category}</span>
               </h2>
               <button
                 onClick={() => navigate(`/category/${category}`)}
-                className="text-indigo-600 hover:text-indigo-800 flex items-center group"
+                className="text-gray-600 hover:text-gray-900 flex items-center group font-medium"
               >
                 View all
                 <ChevronRight className="ml-1 group-hover:translate-x-1 transition-transform" size={20} />
@@ -301,7 +301,7 @@ const ImageDetails = () => {
                   onClick={() => navigate(`/category/${category}/${image.title.toLowerCase().replace(/\s+/g, '-')}`)}
                   className="cursor-pointer group"
                 >
-                  <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-48">
+                  <div className="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-48">
                     <img
                       src={image.src}
                       alt={image.title}
@@ -331,7 +331,7 @@ const ImageDetails = () => {
       >
         <button
           onClick={() => navigate('/all-images')}
-          className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-full shadow-sm text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:shadow-xl hover:scale-105"
+          className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-full shadow-sm text-white bg-gray-900 hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-300 hover:shadow-md"
         >
           Discover More Images
           <ChevronRight className="ml-2" size={24} />

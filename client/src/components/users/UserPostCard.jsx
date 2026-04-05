@@ -100,7 +100,8 @@ const UserPostCard = ({ post, onDelete }) => {
   const handleDownload = async () => {
     try {
       const toastId = toast.loading('Downloading image...');
-      const response = await fetch(`http://localhost:8000/uploads/${post.image_url}`);
+      const downloadUrl = post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`;
+      const response = await fetch(downloadUrl);
       const blob = await response.blob();
       saveAs(blob, post.title || 'creative-image');
       toast.success('Download completed!', { id: toastId });
@@ -150,7 +151,7 @@ const UserPostCard = ({ post, onDelete }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow w-full mb-8 relative flex flex-col"
+        className="bg-white rounded-2xl overflow-hidden hover:shadow-xl shadow-sm transition-all duration-500 w-full relative flex flex-col break-inside-avoid"
       >
         {/* 1. Header */}
         <div className="flex justify-between items-center p-4 bg-white">
@@ -185,17 +186,20 @@ const UserPostCard = ({ post, onDelete }) => {
           )}
         </div>
 
-        <div className="w-full bg-gray-50 border-y border-gray-100 flex items-center justify-center relative group min-h-[300px]">
+        <div className="w-full bg-gray-100 flex items-center justify-center relative group overflow-hidden">
           <img
-            src={`http://localhost:8000/uploads/${post.image_url}`}
+            src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
             alt={post.title}
             onClick={() => setShowFullImage(true)}
-            className="w-full h-auto max-h-[700px] object-contain cursor-pointer transition-transform duration-500 group-hover:scale-[1.01]"
+            className="w-full h-auto max-h-[700px] object-cover cursor-pointer transition-transform duration-700 ease-in-out group-hover:scale-105"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/fallback.jpg';
             }}
           />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex flex-col justify-end p-4">
+             {/* Hover Overlay specifically for aesthetic depth */}
+          </div>
         </div>
 
         {/* 3. Action Bar */}
@@ -358,7 +362,7 @@ const UserPostCard = ({ post, onDelete }) => {
               className="relative max-w-5xl w-full max-h-[90vh] flex justify-center"
             >
               <img
-                src={`http://localhost:8000/uploads/${post.image_url}`}
+                src={post.image_url?.startsWith('http') ? post.image_url : `http://localhost:8000/uploads/${post.image_url}`}
                 alt={post.title}
                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
               />
