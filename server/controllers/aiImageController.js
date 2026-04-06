@@ -1,5 +1,6 @@
 const aiImageService = require('../services/aiImageService');
 const historyModel = require('../models/historyModel');
+const cloudinary = require('../cloudinary');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,23 +9,26 @@ async function generateImage(req, res) {
   const result = await aiImageService.generateImage(prompt);
 
   if (userId) {
-    const filename = `ai-gen-${Date.now()}-${Math.floor(Math.random() * 1000)}.jpg`;
-    const uploadsDir = path.join(__dirname, '..', 'uploads');
-    
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    const base64Str = result.buffer.toString('base64');
+    const dataURI = `data:${result.contentType};base64,${base64Str}`;
+
+    try {
+      const uploadResult = await cloudinary.uploader.upload(dataURI, {
+        folder: 'pixel-hub-ai-generations',
+      });
+      
+      const imageUrl = uploadResult.secure_url;
+      const record = await historyModel.saveHistory(userId, prompt, imageUrl);
+      
+      res.json({
+        success: true,
+        data: record,
+        imageUrl: imageUrl
+      });
+    } catch (error) {
+      console.error('Error uploading AI image to Cloudinary:', error);
+      res.status(500).json({ error: 'Failed to upload generated image' });
     }
-    
-    const filePath = path.join(uploadsDir, filename);
-    await fs.promises.writeFile(filePath, result.buffer);
-    
-    const record = await historyModel.saveHistory(userId, prompt, filename);
-    
-    res.json({
-      success: true,
-      data: record,
-      imageUrl: `http://localhost:8000/uploads/${filename}`
-    });
   } else {
     // Fallback if no userId provided (though technically we should block this or treat as guest)
     res.setHeader('Content-Type', result.contentType);
@@ -45,9 +49,24 @@ async function deleteHistory(req, res) {
   const record = await historyModel.deleteHistory(id, userId);
   
   if (record && record.image_url) {
-    const filePath = path.join(__dirname, '..', 'uploads', record.image_url);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (record.image_url.includes('cloudinary.com')) {
+      try {
+        const urlParts = record.image_url.split('/');
+        const filename = urlParts[urlParts.length - 1];
+        const publicId = `pixel-hub-ai-generations/${filename.split('.')[0]}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.warn('Unable to delete AI image from Cloudinary:', record.image_url, error.message);
+      }
+    } else {
+      const filePath = path.join(__dirname, '..', 'uploads', record.image_url);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+        } catch (err) {
+          console.warn('Unable to delete local AI image:', err.message);
+        }
+      }
     }
   }
   res.json({ success: true, message: 'Deleted successfully' });
