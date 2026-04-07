@@ -18,39 +18,6 @@ const Dashboard = () => {
     description: '' 
   });
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
-
-  const cardVariants = {
-    hover: {
-      y: -5,
-      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
-    }
-  };
-
-  // Fetch user stats
   const fetchUserStats = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/upload/user-stats?user_email=${user?.primaryEmailAddress?.emailAddress}`);
@@ -60,7 +27,6 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch user posts
   const fetchUserPosts = async () => {
     try {
       const res = await axios.get(
@@ -69,7 +35,6 @@ const Dashboard = () => {
       setUserPosts(res.data);
     } catch (error) {
       toast.error('Failed to fetch posts');
-      console.error('Fetch error:', error);
     }
   };
 
@@ -80,10 +45,8 @@ const Dashboard = () => {
     }
   }, [user, selectedTab]);
 
-  // Delete post
   const handleDelete = async (id, imageUrl) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
-
     try {
       await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/upload/delete-post/${id}`, {
         data: { image_url: imageUrl }
@@ -93,11 +56,9 @@ const Dashboard = () => {
       toast.success('Post deleted successfully');
     } catch (error) {
       toast.error('Failed to delete post');
-      console.error('Delete error:', error);
     }
   };
 
-  // Edit post handlers
   const openEditModal = (post) => {
     setEditingPost(post);
     setFormData({
@@ -124,50 +85,29 @@ const Dashboard = () => {
       toast.success('Post updated successfully');
     } catch (error) {
       toast.error('Failed to update post');
-      console.error('Update error:', error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
-      <Toaster 
-        position="top-center" 
-        toastOptions={{
-          style: {
-            borderRadius: '12px',
-            background: '#1e293b',
-            color: '#fff',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-          },
-        }}
-      />
+    <div className="min-h-screen bg-black pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <Toaster position="top-center" toastOptions={{ style: { background: '#18181b', color: '#fff', border: '1px solid #3f3f46' } }} />
       
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto"
-      >
-        <motion.h1 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-4xl font-bold text-gray-900 mb-8 tracking-tight"
-        >
-          Dashboard
+      {/* Glow Effects */}
+      <div className="absolute top-0 right-1/3 w-[30%] h-[300px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-[1600px] mx-auto relative z-10">
+        <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-4xl md:text-5xl font-bold text-white mb-10 tracking-tight">
+          Creator Studio
         </motion.h1>
 
-        {/* Enhanced Tab Component */}
         <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
-          <Tab.List className="flex space-x-1 rounded-xl bg-white p-1 shadow-md max-w-md">
-            {['Profile', 'Posts'].map((tab, idx) => (
+          <Tab.List className="flex space-x-2 rounded-2xl bg-zinc-900/50 block w-max p-1.5 border border-zinc-800 shadow-xl backdrop-blur-md">
+            {['Overview', 'Published Assets'].map((tab, idx) => (
               <Tab
                 key={idx}
                 className={({ selected }) =>
-                  `w-full py-3 px-4 text-sm font-medium rounded-lg transition-all duration-300 ${
-                    selected
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-500 hover:bg-gray-100'
+                  `px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none ${
+                    selected ? 'bg-indigo-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
                   }`
                 }
               >
@@ -179,147 +119,104 @@ const Dashboard = () => {
             ))}
           </Tab.List>
           
-          <Tab.Panels className="mt-6">
-            {/* Profile Section */}
+          <Tab.Panels className="mt-8">
+            {/* Overview Section */}
             <Tab.Panel>
               <AnimatePresence mode="wait">
-                <motion.div
-                  key="profile"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden"
+                <motion.div 
+                   key="profile" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} 
+                   className="glass-card rounded-[2xl] p-8 md:p-12 border border-zinc-800 relative overflow-hidden"
                 >
-                  <div className="flex flex-col md:flex-row items-start gap-8">
-                    <motion.div 
-                      initial={{ scale: 0.9 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200 }}
-                      className="w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-lg"
-                    >
-                      <img 
-                        src={user?.imageUrl} 
-                        alt="Profile" 
-                        className="w-full h-full object-cover"
-                      />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] rounded-full" />
+                  
+                  <div className="flex flex-col md:flex-row items-center md:items-start gap-10 relative z-10">
+                    <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="w-40 h-40 rounded-full overflow-hidden border-2 border-zinc-800 shadow-2xl shrink-0">
+                      <img src={user?.imageUrl} alt="Profile" className="w-full h-full object-cover" />
                     </motion.div>
-                    <div className="flex-1">
-                      <motion.h2 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-3xl font-bold text-gray-800"
-                      >
+                    
+                    <div className="flex-1 w-full text-center md:text-left">
+                      <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-1">
                         {user?.fullName}
-                      </motion.h2>
-                      <motion.p 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="text-gray-600 mb-6"
-                      >
+                      </h2>
+                      <p className="text-zinc-500 mb-8 font-medium">
                         {user?.primaryEmailAddress?.emailAddress}
-                      </motion.p>
+                      </p>
 
-                      <motion.div 
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                      >
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {[
-                          { title: 'Total Posts', value: userStats?.totalPosts || 0, color: 'bg-gray-50 border border-gray-100 text-gray-900' },
-                          { title: 'Total Likes', value: userStats?.totalLikes || 0, color: 'bg-gray-50 border border-gray-100 text-gray-900' },
-                          { title: 'Popular Category', value: userStats?.popularCategory || 'N/A', color: 'bg-gray-50 border border-gray-100 text-gray-900' },
-                          { title: 'Engagement Rate', value: userStats?.engagementRate ? `${userStats.engagementRate}%` : '0%', color: 'bg-gray-50 border border-gray-100 text-gray-900' }
+                          { title: 'Total Assets', value: userStats?.totalPosts || 0 },
+                          { title: 'Total Engagement', value: userStats?.totalLikes || 0 },
+                          { title: 'Top Category', value: userStats?.popularCategory || 'N/A' },
+                          { title: 'Conversion', value: userStats?.engagementRate ? `${userStats.engagementRate}%` : '0%' }
                         ].map((stat, index) => (
                           <motion.div 
-                            key={index}
-                            variants={itemVariants}
-                            className={`p-4 rounded-xl shadow-sm ${stat.color}`}
+                             key={index}
+                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
+                             className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-xl"
                           >
-                            <h3 className="text-sm font-medium mb-1">{stat.title}</h3>
-                            <p className="text-2xl font-bold">{stat.value}</p>
+                            <h3 className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-2">{stat.title}</h3>
+                            <p className="text-3xl font-bold text-white">{stat.value}</p>
                           </motion.div>
                         ))}
-                      </motion.div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </Tab.Panel>
 
-            {/* Posts Section */}
+            {/* Published Assets Section */}
             <Tab.Panel>
               <AnimatePresence mode="wait">
-                <motion.div
-                  key="posts"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
+                <motion.div key="posts" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   {userPosts.length > 0 ? (
-                    <motion.div 
-                      variants={containerVariants}
-                      initial="hidden"
-                      animate="visible"
-                      className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6"
-                    >
+                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
                       {userPosts.map((post) => (
                         <motion.div 
                           key={post.id}
-                          variants={{ ...itemVariants, ...cardVariants }}
-                          whileHover="hover"
-                          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 break-inside-avoid"
+                          className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden shadow-xl break-inside-avoid group"
                         >
-                          <div className="relative h-48 overflow-hidden">
+                          <div className="relative overflow-hidden">
                             <img
                               src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}
                               alt={post.title}
-                              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                              className="w-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                              loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                              <p className="text-white text-sm">{post.description}</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end pointer-events-none">
+                               <p className="text-zinc-300 text-sm font-medium">{post.description}</p>
                             </div>
                           </div>
-                          <div className="p-4">
-                            <h2 className="text-xl font-semibold text-gray-800">{post.title}</h2>
-                            <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">
+                          <div className="p-5">
+                            <h2 className="text-xl font-bold text-white mb-2 tracking-tight">{post.title}</h2>
+                            <span className="inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-zinc-800 border border-zinc-700 text-indigo-400 rounded-md">
                               {post.category}
                             </span>
-                            <div className="flex justify-between mt-4">
-                              <motion.button
-                                whileTap={{ scale: 0.95 }}
+                            <div className="flex justify-between mt-6 gap-2">
+                              <button
                                 onClick={() => openEditModal(post)}
-                                className="flex items-center px-4 py-2 bg-gray-100 text-gray-900 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                                className="flex-1 flex items-center justify-center px-4 py-2 bg-zinc-800 text-zinc-300 text-sm font-medium rounded-xl hover:bg-zinc-700 transition-colors"
                               >
-                                <FiEdit className="mr-1" /> Edit
-                              </motion.button>
-                              <motion.button
-                                whileTap={{ scale: 0.95 }}
+                                <FiEdit className="mr-2 w-4 h-4" /> Edit
+                              </button>
+                              <button
                                 onClick={() => handleDelete(post.id, post.image_url)}
-                                className="flex items-center px-4 py-2 bg-red-50 text-red-600 font-medium rounded-lg hover:bg-red-100 transition-colors"
+                                className="flex-1 flex items-center justify-center px-4 py-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm font-medium rounded-xl hover:bg-rose-500/20 transition-colors"
                               >
-                                <FiTrash2 className="mr-1" /> Delete
-                              </motion.button>
+                                <FiTrash2 className="mr-2 w-4 h-4" /> Delete
+                              </button>
                             </div>
                           </div>
                         </motion.div>
                       ))}
-                    </motion.div>
+                    </div>
                   ) : (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white rounded-2xl shadow-xl p-8 text-center"
-                    >
-                      <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                        <FiImage className="text-gray-400 text-3xl" />
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card rounded-[2xl] border border-zinc-800 p-16 text-center shadow-xl">
+                      <div className="mx-auto w-24 h-24 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mb-6 shadow-2xl">
+                        <FiImage className="text-zinc-600 text-3xl" />
                       </div>
-                      <h3 className="text-xl font-medium text-gray-700 mb-2">No Posts Yet</h3>
-                      <p className="text-gray-500">You haven't uploaded any images yet.</p>
+                      <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">No Published Assets</h3>
+                      <p className="text-zinc-500">Your portfolio is currently empty. Head to the upload studio to share your work.</p>
                     </motion.div>
                   )}
                 </motion.div>
@@ -328,87 +225,52 @@ const Dashboard = () => {
           </Tab.Panels>
         </Tab.Group>
 
-        {/* Edit Modal */}
+        {/* Edit Modal Custom Dark UI */}
         <AnimatePresence>
           {editingPost && (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center z-50 p-4"
             >
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 25 }}
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+                initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
               >
-                <div className="flex justify-between items-center p-6 border-b">
-                  <h2 className="text-xl font-bold text-gray-800">Edit Post</h2>
-                  <button 
-                    onClick={() => setEditingPost(null)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <FiX size={24} />
+                <div className="flex justify-between items-center p-6 border-b border-zinc-800/50">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Modify Asset Details</h2>
+                  <button onClick={() => setEditingPost(null)} className="text-zinc-500 hover:text-white transition-colors">
+                    <FiX size={20} />
                   </button>
                 </div>
                 <form onSubmit={handleEditSubmit} className="p-6">
-                  <div className="mb-4">
-                    <label className="block text-gray-700 mb-2 font-medium">Title</label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleEditChange}
-                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all font-medium"
-                      required
-                    />
+                  <div className="space-y-5">
+                     <div>
+                       <label className="block text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-2">Title</label>
+                       <input type="text" name="title" value={formData.title} onChange={handleEditChange} className="w-full p-4 bg-zinc-950 border border-zinc-800 rounded-xl text-white focus:outline-none focus:border-indigo-500/50 transition-all font-medium shadow-inner" required />
+                     </div>
+                     <div>
+                       <label className="block text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-2">Category</label>
+                       <input type="text" name="category" value={formData.category} onChange={handleEditChange} className="w-full p-4 bg-zinc-950 border border-zinc-800 rounded-xl text-white focus:outline-none focus:border-indigo-500/50 transition-all font-medium shadow-inner" required />
+                     </div>
+                     <div>
+                       <label className="block text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-2">Description</label>
+                       <textarea name="description" value={formData.description} onChange={handleEditChange} className="w-full p-4 bg-zinc-950 border border-zinc-800 rounded-xl text-white focus:outline-none focus:border-indigo-500/50 transition-all font-medium shadow-inner resize-none" rows="4" required />
+                     </div>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 mb-2 font-medium">Category</label>
-                    <input
-                      type="text"
-                      name="category"
-                      value={formData.category}
-                      onChange={handleEditChange}
-                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all font-medium"
-                      required
-                    />
-                  </div>
-                  <div className="mb-6">
-                    <label className="block text-gray-700 mb-2 font-medium">Description</label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleEditChange}
-                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all font-medium"
-                      rows="4"
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-end gap-3">
-                    <motion.button
-                      type="button"
-                      onClick={() => setEditingPost(null)}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                    >
+                  <div className="flex justify-end gap-3 mt-8">
+                    <button type="button" onClick={() => setEditingPost(null)} className="px-6 py-3 bg-zinc-800 text-zinc-300 rounded-xl hover:bg-zinc-700 transition-colors font-bold text-sm">
                       Cancel
-                    </motion.button>
-                    <motion.button
-                      type="submit"
-                      whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2.5 bg-gray-900 text-white rounded-full hover:bg-black transition-colors font-medium flex items-center"
-                    >
-                      <FiSave className="mr-1" /> Save Changes
-                    </motion.button>
+                    </button>
+                    <button type="submit" className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-500 shadow-indigo-500/25 shadow-lg transition-colors font-bold flex items-center text-sm">
+                      <FiSave className="mr-2 w-4 h-4" /> Save Configuration
+                    </button>
                   </div>
                 </form>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
+
       </motion.div>
     </div>
   );

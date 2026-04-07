@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { 
-  UserButton,
-  useUser,
-  SignInButton,
-  SignUpButton 
-} from '@clerk/clerk-react';
+import { useUser, SignInButton } from '@clerk/clerk-react';
+import { FiDownload, FiTrash2, FiClock, FiSettings, FiImage, FiCpu, FiAlertCircle } from 'react-icons/fi';
+import { Toaster, toast } from 'sonner';
 
 const ImageGenerator = () => {
   const [prompt, setPrompt] = useState('');
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [isPromptFocused, setIsPromptFocused] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [isHoveringGenerate, setIsHoveringGenerate] = useState(false);
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const { isSignedIn, user } = useUser();
@@ -34,582 +27,190 @@ const ImageGenerator = () => {
   };
 
   React.useEffect(() => {
-    if (isSignedIn && user) {
-      fetchHistory();
-    }
+    if (isSignedIn && user) fetchHistory();
   }, [isSignedIn, user]);
 
   const generateImage = async () => {
     if (!isSignedIn) return;
-    
-    if (!prompt.trim()) {
-      setError('Please enter a prompt');
-      return;
-    }
+    if (!prompt.trim()) { toast.error('Enter a valid prompt'); return; }
 
-    setLoading(true);
-    setImage(null);
-    setError('');
-    setDownloadProgress(0);
+    setLoading(true); setImage(null); setDownloadProgress(0);
 
     try {
+      // Simulate progress
       await new Promise(resolve => {
         let progress = 0;
         const interval = setInterval(() => {
-          progress += 5;
-          setDownloadProgress(Math.min(progress, 80));
-          if (progress >= 80) {
-            clearInterval(interval);
-            resolve();
-          }
+          progress += 5; setDownloadProgress(Math.min(progress, 80));
+          if (progress >= 80) { clearInterval(interval); resolve(); }
         }, 100);
       });
 
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai/generate-image`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: prompt.trim(), userId: user.id }),
       });
 
-      if (!response.ok) {
-        const errorPayload = await response.json().catch(() => null);
-        throw new Error(
-          errorPayload?.error || `Image request failed with status ${response.status}`
-        );
-      }
+      if (!response.ok) throw new Error('API Request Failed');
 
       const data = await response.json();
-
       setDownloadProgress(100);
       setImage(data.imageUrl);
-      
-      setHistory((prev) => [data.data, ...prev]);
+      setHistory(prev => [data.data, ...prev]);
 
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          setDownloadProgress(0);
-          resolve();
-        }, 300);
-      });
+      setTimeout(() => setDownloadProgress(0), 300);
     } catch (error) {
-      console.error('Error generating image:', error);
-      setError(
-        error?.message?.includes('POLLINATIONS_API_KEY')
-          ? 'Backend image API key is missing. Add POLLINATIONS_API_KEY to server/.env.'
-          : 'Failed to generate image. Please try again with a different prompt.'
-      );
+      toast.error('Synthesis failed. Adjust parameters and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      generateImage();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateImage(); }
   };
 
   const downloadImage = async () => {
     if (!image) return;
-    
     try {
+      toast.loading('Extracting asset...');
       setDownloadProgress(0);
       const response = await fetch(image);
-
-      if (!response.ok) {
-        throw new Error(`Download failed with status ${response.status}`);
-      }
-
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `ai-generated-${prompt.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      
-      const reader = new FileReader();
-      reader.onprogress = (e) => {
-        if (e.lengthComputable) {
-          setDownloadProgress(Math.round((e.loaded / e.total) * 100));
-        }
-      };
-      reader.onloadend = () => {
-        setTimeout(() => setDownloadProgress(0), 500);
-      };
-      reader.readAsDataURL(blob);
-      
-      link.click();
-      document.body.removeChild(link);
+      link.href = url; link.download = `synthesis-${Date.now()}.jpg`;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      toast.dismiss(); toast.success('Extraction complete');
     } catch (err) {
-      console.error('Download failed:', err);
-      setError('Download failed. Please try again.');
-    }
-  };
-
-  const generateNewVariation = () => {
-    if (prompt.trim()) {
-      generateImage();
+      toast.dismiss(); toast.error('Download failed');
     }
   };
 
   const deleteHistoryItem = async (id) => {
-    if (!window.confirm('Delete this image from history?')) return;
+    if (!window.confirm('Purge record?')) return;
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ai/history/${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id })
       });
-      if (res.ok) {
-        setHistory(prev => prev.filter(item => item.id !== id));
-      }
-    } catch (err) {
-      console.error('Failed to delete history', err);
-    }
-  };
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10
-      }
-    }
+      if (res.ok) setHistory(prev => prev.filter(item => item.id !== id));
+    } catch (err) {}
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex-shrink-0 flex items-center">
-            <Link 
-              to="/" 
-              className="flex items-center space-x-2 group transition-all duration-300"
-            >
-              <motion.div 
-                whileHover={{ rotate: 15, scale: 1.1 }}
-                className="text-2xl"
-              >
-                📷
-              </motion.div>
-              <span className="text-xl font-bold hidden sm:inline-block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                PixelHub
-              </span>
-            </Link>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {isSignedIn ? (
-              <>
-                <UserButton afterSignOutUrl="/" />
-              </>
-            ) : (
-              <>
-                <SignInButton mode="modal">
-                  <button className="px-4 py-2 text-gray-600 hover:text-indigo-600 transition-colors">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all"
-                  >
-                    Sign Up
-                  </motion.button>
-                </SignUpButton>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-black pt-24 px-4 sm:px-6 lg:px-12 relative overflow-hidden flex pb-6">
+      <Toaster theme="dark"  />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black pointer-events-none" />
 
-      {/* Main Content */}
-      <div className="max-w-7xl pt-24 mx-auto px-6 py-8 flex gap-8">
-        {/* Main Generator Column */}
-        <div className={`transition-all duration-300 ${showHistory ? 'w-full lg:w-2/3' : 'w-full'}`}>
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-          >
-            <motion.div variants={itemVariants} className="text-center mb-12 relative">
-              {isSignedIn && (
-                <button
-                  onClick={() => setShowHistory(!showHistory)}
-                  className="absolute right-0 top-0 text-indigo-600 bg-indigo-50 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors hidden lg:flex items-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                  </svg>
-                  {showHistory ? 'Hide History' : 'Show History'}
-                </button>
-              )}
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                AI Image Generator
-              </h1>
-            <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
-              {user?.firstName ? `${user.firstName}, ` : ''}
-              Transform your ideas into stunning visuals with our AI-powered image generation
-            </p>
-          </motion.div>
+      <div className={`max-w-[1920px] mx-auto w-full flex flex-col lg:flex-row gap-6 relative z-10 transition-all duration-500`}>
+        
+        {/* Main Interface Window */}
+        <div className={`flex-1 flex flex-col gap-6 ${showHistory ? 'lg:w-3/4' : 'w-full'}`}>
+          <div className="flex justify-between items-end mb-4">
+             <div>
+               <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight flex items-center gap-4 mb-2">
+                 Neural Synthesis <span className="text-[10px] uppercase bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full border border-indigo-500/20 tracking-widest">Active</span>
+               </h1>
+               <p className="text-zinc-500 font-medium tracking-wide">
+                 Input parameters in natural language to compile high-fidelity graphics.
+               </p>
+             </div>
+             {isSignedIn && (
+               <button onClick={() => setShowHistory(!showHistory)} className="hidden lg:flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-zinc-300 rounded-xl hover:bg-zinc-800 border border-zinc-800 transition-colors text-sm font-bold shadow-lg">
+                 <FiClock /> {showHistory ? 'Hide Terminal' : 'View Terminal Log'}
+               </button>
+             )}
+          </div>
 
-          <motion.div 
-            variants={itemVariants}
-            className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-10 transition-all duration-300 hover:shadow-3xl"
-          >
-            <div className="p-8">
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="prompt" className="block text-lg font-medium text-gray-700 mb-3">
-                    Describe Your Vision
-                  </label>
-                  <motion.div 
-                    animate={{
-                      borderColor: isPromptFocused ? '#7c3aed' : '#e5e7eb',
-                      boxShadow: isPromptFocused ? '0 0 0 3px rgba(124, 58, 237, 0.1)' : 'none'
-                    }}
-                    className="relative"
-                  >
-                    <textarea
-                      id="prompt"
-                      placeholder="Describe anything you can imagine...\nExamples:\n• A futuristic cityscape at sunset\n• A portrait of a cyberpunk samurai\n• A magical forest with glowing mushrooms"
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      onFocus={() => setIsPromptFocused(true)}
-                      onBlur={() => setIsPromptFocused(false)}
-                      className="w-full p-5 border-2 border-gray-200 rounded-xl focus:outline-none resize-none transition-all duration-200 text-gray-700 bg-gray-50"
-                      rows="5"
-                      maxLength="500"
-                      disabled={!isSignedIn}
-                    />
-                    {!isSignedIn && (
-                      <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-xl">
-                        <SignInButton mode="modal">
-                          <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
-                            Sign In to Generate
-                          </button>
-                        </SignInButton>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center mt-2 px-1">
-                      <span className="text-sm text-gray-400">
-                        {prompt.length}/500 characters
-                      </span>
-                      <span className="text-sm text-gray-400 hidden md:block">
-                        Press Enter to generate
-                      </span>
-                    </div>
-                  </motion.div>
-                </div>
-                
-                <div className="flex flex-col md:flex-row gap-4">
-                  <motion.button
-                    onClick={generateImage}
-                    onHoverStart={() => setIsHoveringGenerate(true)}
-                    onHoverEnd={() => setIsHoveringGenerate(false)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`relative flex-1 py-4 px-8 rounded-xl font-semibold text-lg overflow-hidden ${
-                      loading 
-                        ? 'bg-gray-300 cursor-not-allowed' 
-                        : isSignedIn 
-                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                          : 'bg-gray-300 cursor-not-allowed'
-                    }`}
-                    disabled={loading || !isSignedIn}
-                  >
-                    {loading && (
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${downloadProgress}%` }}
-                        className="absolute top-0 left-0 h-full bg-indigo-500 bg-opacity-30 transition-all duration-300"
-                      />
-                    )}
-                    <span className="relative z-10 flex items-center justify-center">
-                      {loading ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Generating ({downloadProgress}%)
-                        </>
-                      ) : isSignedIn ? (
-                        <>
-                          <AnimatePresence>
-                            {isHoveringGenerate && (
-                              <motion.span 
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 10 }}
-                                className="absolute -left-2"
-                              >
-                                ✨
-                              </motion.span>
-                            )}
-                          </AnimatePresence>
-                          Generate Image
-                          <AnimatePresence>
-                            {isHoveringGenerate && (
-                              <motion.span 
-                                initial={{ opacity: 0, x: 10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                className="absolute -right-2"
-                              >
-                                ✨
-                              </motion.span>
-                            )}
-                          </AnimatePresence>
-                        </>
-                      ) : (
-                        'Sign In to Generate'
-                      )}
-                    </span>
-                  </motion.button>
+          <div className="glass-card rounded-[2rem] border border-zinc-800 p-6 md:p-10 shadow-2xl relative overflow-hidden flex flex-col min-h-[400px]">
+             
+             {/* Input Area */}
+             <div className="relative mb-6">
+                <textarea
+                  placeholder="Initiate prompt sequence. (e.g. A hyper-realistic obsidian monolith in a vivid neon desert, 8k resolution, cinematic lighting...)"
+                  value={prompt} onChange={(e) => setPrompt(e.target.value)} onKeyDown={handleKeyPress}
+                  disabled={!isSignedIn || loading}
+                  className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-2xl p-6 text-lg focus:outline-none focus:border-indigo-500/50 shadow-inner resize-none placeholder-zinc-700 min-h-[160px]"
+                />
+                {!isSignedIn && (
+                  <div className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                    <SignInButton mode="modal">
+                      <button className="px-8 py-3 bg-indigo-600 text-white rounded-full font-bold shadow-lg flex items-center gap-2">
+                        <FiCpu /> Authenticate to Initialize
+                      </button>
+                    </SignInButton>
+                  </div>
+                )}
+             </div>
+
+             {/* Action Bar */}
+             <div className="flex justify-end border-b border-zinc-800/50 pb-8 mb-8">
+               <button 
+                 onClick={generateImage} disabled={loading || !isSignedIn}
+                 className={`flex items-center px-10 py-4 rounded-xl font-bold text-white transition-all overflow-hidden relative shadow-xl ${loading || !isSignedIn ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700' : 'bg-indigo-600 hover:bg-indigo-500 hover:shadow-indigo-500/25'}`}
+               >
+                  {loading ? (
+                    <span className="flex items-center z-10"><FiLoader className="animate-spin mr-3" /> Processing... {downloadProgress}%</span>
+                  ) : <span className="flex items-center gap-3 z-10"><FiCpu /> Compile Image</span>}
                   
-                  {image && (
-                    <motion.button
-                      onClick={generateNewVariation}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2"
-                      disabled={loading || !isSignedIn}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                      </svg>
-                      New Variation
-                    </motion.button>
+                  {loading && <div className="absolute left-0 top-0 h-full bg-indigo-400/20" style={{ width: `${downloadProgress}%` }} />}
+               </button>
+             </div>
+
+             {/* Output Area */}
+             <div className="flex-1 flex flex-col justify-center items-center">
+                <AnimatePresence mode="wait">
+                  {image ? (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full h-full flex flex-col items-center gap-6">
+                       <div className="rounded-2xl overflow-hidden shadow-2xl relative group bg-black max-w-4xl mx-auto w-full border border-zinc-800">
+                         <img src={image} alt="Generated output" className="w-full object-contain max-h-[60vh] z-10 relative" />
+                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm gap-4 z-20">
+                            <button onClick={downloadImage} className="px-6 py-3 bg-white text-black font-bold rounded-xl flex items-center gap-2 hover:scale-105 transition-transform"><FiDownload /> Extract</button>
+                         </div>
+                       </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-zinc-600 flex flex-col items-center text-center p-10 max-w-md">
+                       <FiImage className="w-16 h-16 mb-4 text-zinc-800" />
+                       <h3 className="font-bold text-zinc-500 text-xl tracking-tight mb-2">Output Receiver Empty</h3>
+                       <p className="text-sm font-medium">Input parameters and compile to view generated asset.</p>
+                    </motion.div>
                   )}
-                </div>
-              </div>
+                </AnimatePresence>
+             </div>
 
-              {error && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg"
-                >
-                  <div className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-red-600 font-medium">{error}</p>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
-
-          {image && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-10"
-            >
-              <div className="p-8">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
-                  <h3 className="text-2xl font-bold text-gray-800">Your Generated Masterpiece</h3>
-                  <div className="flex gap-3">
-                    <motion.button
-                      onClick={downloadImage}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 shadow-md"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                      Download
-                    </motion.button>
-                    {downloadProgress > 0 && downloadProgress < 100 && (
-                      <div className="flex items-center text-sm text-gray-500">
-                        <span className="mr-2">Downloading...</span>
-                        <span>{downloadProgress}%</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex justify-center mb-8">
-                  <motion.div 
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="relative group overflow-hidden rounded-xl"
-                  >
-                    <img 
-                      src={image} 
-                      alt={`AI Generated: ${prompt}`}
-                      className="rounded-xl shadow-lg max-w-full h-auto transition-all duration-500 group-hover:scale-102"
-                      style={{ maxHeight: '600px' }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <p className="text-white text-lg font-medium truncate">"{prompt}"</p>
-                    </div>
-                  </motion.div>
-                </div>
-                
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border border-gray-100">
-                  <p className="text-gray-700 font-medium mb-2 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                    Prompt Used:
-                  </p>
-                  <p className="text-gray-600 pl-7">"{prompt}"</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          <motion.div 
-            variants={itemVariants}
-            className="mt-12 text-center"
-          >
-            <div className="bg-white rounded-xl p-8 shadow-xl border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-5 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Pro Tips for Better Results
-              </h3>
-              <div className="grid md:grid-cols-3 gap-6 text-left">
-                <div className="space-y-3">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-5 w-5 text-indigo-500 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="ml-3 text-gray-600"><strong className="text-gray-800">Be Specific:</strong> Include details about style, colors, mood, and composition.</p>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-5 w-5 text-indigo-500 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="ml-3 text-gray-600"><strong className="text-gray-800">Art Styles:</strong> Try "oil painting", "anime style", "photorealistic", "watercolor".</p>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-5 w-5 text-indigo-500 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="ml-3 text-gray-600"><strong className="text-gray-800">Add Context:</strong> Mention the setting, time of day, weather conditions.</p>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-5 w-5 text-indigo-500 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="ml-3 text-gray-600"><strong className="text-gray-800">Lighting:</strong> Use terms like "dramatic lighting", "soft glow", "neon lights".</p>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-5 w-5 text-indigo-500 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="ml-3 text-gray-600"><strong className="text-gray-800">Quality Words:</strong> Add "high resolution", "4K", "detailed", "ultra-realistic".</p>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0 h-5 w-5 text-indigo-500 mt-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <p className="ml-3 text-gray-600"><strong className="text-gray-800">Perspective:</strong> Try "close-up", "wide angle", "aerial view", "macro shot".</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+          </div>
         </div>
-        {/* History Sidebar */}
+
+        {/* History Terminal (Right Panel) */}
         <AnimatePresence>
           {showHistory && isSignedIn && (
             <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="hidden lg:block w-1/3 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex-col h-[calc(100vh-140px)] sticky top-28"
+              initial={{ opacity: 0, x: 20, width: 0 }} 
+              animate={{ opacity: 1, x: 0, width: '25%' }} 
+              exit={{ opacity: 0, x: 20, width: 0 }}
+              className="lg:flex hidden h-[calc(100vh-140px)] sticky top-28 bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden flex-col shadow-2xl"
             >
-              <div className="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                  </svg>
-                  Generation History
-                </h3>
-                <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full font-medium">
-                  {history.length} items
-                </span>
+              <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex justify-between items-center">
+                 <h3 className="font-bold text-white text-sm tracking-widest uppercase flex items-center gap-2">
+                   <FiClock className="text-indigo-500" /> Terminal Log
+                 </h3>
+                 <span className="text-[10px] font-bold text-zinc-500">{history.length} FILES</span>
               </div>
-              
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {history.length === 0 ? (
-                  <div className="text-center text-gray-500 mt-10">
-                    <p>No history yet.</p>
-                    <p className="text-sm">Start generating images!</p>
-                  </div>
+                  <div className="text-center text-zinc-600 mt-10 text-sm font-medium">Log empty. Initiate synthesis.</div>
                 ) : (
-                  history.map((item) => (
-                    <div key={item.id} className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-indigo-300 transition-all cursor-pointer shadow-sm hover:shadow-md">
-                      <img 
-                        src={item.image_url?.startsWith('http') ? item.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${item.image_url}`} 
-                        alt={item.prompt}
-                        className="w-full h-40 object-cover"
-                        onClick={() => {
-                          setImage(item.image_url?.startsWith('http') ? item.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${item.image_url}`);
-                          setPrompt(item.prompt);
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
-                        <p className="text-white text-xs line-clamp-2 mb-2">{item.prompt}</p>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); deleteHistoryItem(item.id); }}
-                          className="self-end bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-md"
-                          title="Delete from history"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
+                  history.map(item => (
+                    <div key={item.id} onClick={() => { setImage(item.image_url?.startsWith('http') ? item.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${item.image_url}`); setPrompt(item.prompt); }} className="relative group cursor-pointer border border-zinc-800 rounded-xl overflow-hidden bg-black aspect-square">
+                       <img src={item.image_url?.startsWith('http') ? item.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${item.image_url}`} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-3 pointer-events-none">
+                          <p className="text-[10px] text-zinc-300 line-clamp-2 uppercase tracking-wide font-medium leading-tight">{item.prompt}</p>
+                       </div>
+                       <button onClick={(e) => { e.stopPropagation(); deleteHistoryItem(item.id); }} className="absolute top-2 right-2 bg-black/60 rounded-md p-1.5 opacity-0 group-hover:opacity-100 hover:text-rose-500 text-zinc-400 transition-all shadow-md z-10 border border-zinc-700">
+                          <FiTrash2 className="w-3 h-3" />
+                       </button>
                     </div>
                   ))
                 )}
@@ -617,6 +218,7 @@ const ImageGenerator = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
       </div>
     </div>
   );

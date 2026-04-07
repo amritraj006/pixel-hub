@@ -22,16 +22,12 @@ const Post = () => {
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/upload/fetch-images?user_id=${userId}`);
         setImages(res.data);
       } catch (err) {
-        console.error('Error fetching images:', err);
         setError('Failed to fetch images. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
-
-    if (isLoaded) {
-      fetchImages();
-    }
+    if (isLoaded) fetchImages();
   }, [user, isLoaded]);
 
   const categories = [...new Set(images.map(img => img.category))];
@@ -46,9 +42,7 @@ const Post = () => {
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
+      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
     );
   };
 
@@ -59,27 +53,19 @@ const Post = () => {
 
   const getCategoryIcon = (category) => {
     switch(category.toLowerCase()) {
-      case 'art':
-        return <FaPaintBrush className="mr-2" />;
-      case 'design':
-        return <FaPalette className="mr-2" />;
-      case 'photography':
-        return <FaCamera className="mr-2" />;
-      case 'code':
-        return <FaCode className="mr-2" />;
-      default:
-        return <FaPaintBrush className="mr-2" />;
+      case 'art': return <FaPaintBrush className="mr-2 text-rose-400" />;
+      case 'design': return <FaPalette className="mr-2 text-indigo-400" />;
+      case 'photography': return <FaCamera className="mr-2 text-amber-400" />;
+      case 'code': return <FaCode className="mr-2 text-emerald-400" />;
+      default: return <FaPaintBrush className="mr-2 text-zinc-400" />;
     }
   };
 
-  if (!isLoaded) {
+  if (!isLoaded || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        >
-          <FiLoader className="h-12 w-12 text-indigo-500" />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+          <div className="w-16 h-16 border-4 border-zinc-800 border-t-indigo-500 rounded-full" />
         </motion.div>
       </div>
     );
@@ -87,293 +73,182 @@ const Post = () => {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-md w-full border border-gray-100 transform hover:scale-[1.01] transition-transform duration-300"
-        >
-          <div className="p-8 text-center">
-            <motion.div
-              animate={{ 
-                y: [0, -10, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                repeatType: "reverse", 
-                duration: 3 
-              }}
-              className="flex justify-center mb-6"
-            >
-              <div className="w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg">
-                <FiEye className="h-10 w-10" />
-              </div>
-            </motion.div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Creative Community
-            </h2>
-            <p className="text-gray-600 mb-6">Sign in to explore inspiring works from our community</p>
-            
-            <motion.div
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <SignInButton mode="modal">
-                <button className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium flex items-center justify-center space-x-2 hover:shadow-lg transition-all duration-300 shadow-md hover:shadow-indigo-200/50">
-                  <span>Sign In to View Gallery</span>
-                </button>
-              </SignInButton>
-            </motion.div>
-          </div>
+      <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
+        
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card rounded-[2rem] border-zinc-800 overflow-hidden max-w-md w-full p-10 text-center relative z-10 shadow-2xl">
+           <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl text-indigo-400">
+              <FiEye className="h-8 w-8" />
+           </motion.div>
+           <h2 className="text-3xl font-bold bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-3 tracking-tight">Community Feed</h2>
+           <p className="text-zinc-500 mb-8 font-medium">Authenticate to explore unrestricted access to our global creator network.</p>
+           
+           <SignInButton mode="modal">
+             <button className="w-full py-4 px-6 bg-indigo-600 text-white rounded-xl font-bold flex items-center justify-center hover:bg-indigo-500 hover:shadow-indigo-500/25 shadow-lg transition-all">
+               Sign In to View Gallery
+             </button>
+           </SignInButton>
         </motion.div>
       </div>
     );
   }
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-      >
-        <FiLoader className="h-12 w-12 text-indigo-500" />
-      </motion.div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white p-6 rounded-2xl shadow-lg max-w-md w-full border border-red-100 text-center"
-      >
-        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-500 mb-4">
-          <FiAlertCircle className="h-6 w-6" />
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black p-4">
+        <div className="glass-card p-10 rounded-3xl border border-rose-500/20 text-center max-w-md">
+           <FiAlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+           <h3 className="text-xl font-bold text-white mb-2">Connection Interrupted</h3>
+           <p className="text-zinc-500 mb-6">{error}</p>
+           <button onClick={() => window.location.reload()} className="px-6 py-3 bg-zinc-800 text-white rounded-xl hover:bg-zinc-700 transition-colors font-bold text-sm">
+             Re-establish Connection
+           </button>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Oops! Something went wrong</h3>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-        >
-          Try Again
-        </motion.button>
-      </motion.div>
-    </div>
-  );
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen pt-24 bg-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="absolute top-0 right-1/4 w-[40%] h-[400px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
+
+      <div className="max-w-[1920px] mx-auto relative z-10">
+        
         {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Community Gallery
-            </span>
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover and connect with creative minds from around the world
-          </p>
-          <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-              {filteredImages.length} {filteredImages.length === 1 ? 'Creative Work' : 'Creative Works'}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-6">
+            <span className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+               <FiEye /> Community Feed
             </span>
           </div>
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-br from-zinc-100 to-zinc-500 bg-clip-text text-transparent mb-5 tracking-tight">
+             Global Network
+          </h1>
+          <p className="text-lg text-zinc-400 max-w-2xl mx-auto font-medium">
+             Discover, connect, and elevate with creative minds worldwide.
+          </p>
         </motion.div>
 
-        {/* Search and Filter Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search Input */}
-            <div className="relative w-full md:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiSearch className="h-5 w-5 text-gray-400" />
+        {/* Search and Filter */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-12 max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+            
+            <div className="relative w-full md:w-2/3">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <FiSearch className="h-5 w-5 text-indigo-400" />
               </div>
-              <input
-                type="text"
-                placeholder="Search posts by title or description..."
-                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <input type="text" placeholder="Search by title or description..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="block w-full pl-12 pr-12 py-3.5 bg-zinc-900 border border-zinc-800 rounded-2xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 shadow-xl transition-all" />
               {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <FiX className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-white">
+                  <FiX className="h-5 w-5" />
                 </button>
               )}
             </div>
 
-            {/* Filter Button */}
             <div className="relative w-full md:w-auto">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 w-full justify-center md:w-auto"
+                className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl shadow-xl transition-all w-full md:w-auto ${
+                   isFilterOpen || selectedCategories.length > 0 
+                     ? 'bg-indigo-600 text-white border border-indigo-500' 
+                     : 'bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800'
+                }`}
               >
-                <FiFilter className="h-5 w-5 text-gray-700" />
-                <span>Filter</span>
+                <FiFilter className="h-5 w-5" />
+                <span className="font-bold">Filter</span>
                 {selectedCategories.length > 0 && (
-                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-indigo-600 rounded-full">
+                  <span className="inline-flex items-center justify-center px-2 text-[10px] bg-white text-indigo-600 rounded-md font-bold">
                     {selectedCategories.length}
                   </span>
                 )}
-              </motion.button>
+              </button>
 
-              {/* Filter Dropdown */}
-              {isFilterOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 p-4"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="font-medium text-gray-900">Categories</h3>
-                    {selectedCategories.length > 0 && (
-                      <button
-                        onClick={clearFilters}
-                        className="text-sm text-indigo-600 hover:text-indigo-800"
-                      >
-                        Clear all
-                      </button>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <div key={category} className="flex items-center">
-                        <input
-                          id={`filter-${category}`}
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          checked={selectedCategories.includes(category)}
-                          onChange={() => toggleCategory(category)}
-                        />
-                        <label
-                          htmlFor={`filter-${category}`}
-                          className="ml-3 text-sm text-gray-700 capitalize flex items-center"
-                        >
-                          {getCategoryIcon(category)}
-                          {category}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {isFilterOpen && (
+                  <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute right-0 mt-3 w-64 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800 rounded-2xl p-5 z-20 shadow-2xl hidden md:block">
+                    <div className="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+                       <h3 className="font-bold text-white">Categories</h3>
+                       {selectedCategories.length > 0 && <button onClick={clearFilters} className="text-xs text-indigo-400 font-bold uppercase hover:text-indigo-300">Clear</button>}
+                    </div>
+                    <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar">
+                       {categories.map((category) => (
+                         <div key={category} className="flex items-center group">
+                            <input type="checkbox" id={`cat-${category}`} checked={selectedCategories.includes(category)} onChange={() => toggleCategory(category)} className="h-4 w-4 rounded border-zinc-700 bg-zinc-800 text-indigo-600 focus:ring-0 cursor-pointer" />
+                            <label htmlFor={`cat-${category}`} className="ml-3 text-sm text-zinc-400 capitalize flex items-center cursor-pointer group-hover:text-white">
+                               {getCategoryIcon(category)} {category}
+                            </label>
+                         </div>
+                       ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+            
+            {/* Mobile inline filter */}
+            <AnimatePresence>
+               {isFilterOpen && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:hidden overflow-hidden">
+                     <div className="flex justify-between mb-3"><span className="font-bold text-white">Categories</span><button onClick={clearFilters} className="text-xs text-indigo-400 font-bold">Clear</button></div>
+                     <div className="grid grid-cols-2 gap-2">
+                        {categories.map(c => (
+                          <label key={c} className="flex items-center text-sm text-zinc-400"><input type="checkbox" className="mr-2 rounded border-zinc-700 bg-zinc-800 text-indigo-600" checked={selectedCategories.includes(c)} onChange={()=>toggleCategory(c)} /><span className="capitalize">{c}</span></label>
+                        ))}
+                     </div>
+                  </motion.div>
+               )}
+            </AnimatePresence>
           </div>
 
-          {/* Selected Categories */}
-          {selectedCategories.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="mt-4 flex flex-wrap gap-2"
-            >
-              {selectedCategories.map((category) => (
-                <motion.span
-                  key={category}
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
-                >
-                  {getCategoryIcon(category)}
-                  {category}
-                  <button
-                    type="button"
-                    className="flex-shrink-0 ml-1.5 inline-flex text-indigo-600 hover:text-indigo-900"
-                    onClick={() => toggleCategory(category)}
-                  >
-                    <FiX className="h-4 w-4" />
-                  </button>
-                </motion.span>
-              ))}
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {selectedCategories.length > 0 && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 flex flex-wrap gap-2 justify-center">
+                {selectedCategories.map((category) => (
+                  <span key={category} className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 uppercase tracking-wider">
+                    {getCategoryIcon(category)}{category}
+                    <button type="button" className="ml-2 text-indigo-400 hover:text-indigo-200" onClick={() => toggleCategory(category)}>
+                      <FiX className="h-4 w-4" />
+                    </button>
+                  </span>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
-        {/* Results Count */}
-        <div className="mb-6 flex justify-between items-center">
-          <p className="text-gray-600">
-            Showing {filteredImages.length} of {images.length} creative works
-          </p>
-          {(searchTerm || selectedCategories.length > 0) && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={clearFilters}
-              className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center"
-            >
-              <FiX className="h-4 w-4 mr-1" />
-              Clear filters
-            </motion.button>
-          )}
+        {/* Results Metadata */}
+        <div className="mb-8 flex justify-between items-center border-b border-zinc-800/50 pb-4">
+           <p className="text-zinc-500 font-medium">Monitoring <span className="text-white">{filteredImages.length}</span> publications</p>
+           {(searchTerm || selectedCategories.length > 0) && (
+              <button onClick={clearFilters} className="text-sm font-medium text-rose-500 hover:text-rose-400 flex items-center">
+                 <FiX className="mr-1 w-4 h-4" /> Reset Filters
+              </button>
+           )}
         </div>
 
         {/* Gallery Grid */}
         {filteredImages.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             <AnimatePresence>
               {filteredImages.map((img) => (
-                <motion.div
-                  key={img.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  className="break-inside-avoid"
-                  layout
-                >
-                  <UserPostCard 
-                    post={img} 
-                  />
+                <motion.div key={img.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4 }} className="break-inside-avoid">
+                  <UserPostCard post={img} />
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center"
-          >
-            <div className="text-gray-300 mb-4">
-              <FiSearch className="mx-auto h-16 w-16" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card border border-zinc-800 rounded-[2rem] p-16 text-center shadow-2xl flex flex-col items-center">
+            <div className="w-24 h-24 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mb-6 shadow-xl">
+               <FiSearch className="h-10 w-10 text-zinc-600" />
             </div>
-            <h3 className="text-xl font-medium text-gray-700 mb-2">No creative works found</h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-6">
-              {searchTerm || selectedCategories.length > 0
-                ? "Try adjusting your search or filter criteria" 
-                : "The community hasn't posted anything yet. Be the first to share your work!"}
+            <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Zero Network Results</h3>
+            <p className="text-zinc-500 max-w-sm font-medium mb-8">
+              Adjust parameters or wait for new telemetry data to populate.
             </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={clearFilters}
-              className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
-            >
+            <button onClick={clearFilters} className="px-8 py-3.5 bg-indigo-600 text-white rounded-full font-bold shadow-lg hover:bg-indigo-500 hover:shadow-indigo-500/25 transition-all">
               Clear Filters
-            </motion.button>
+            </button>
           </motion.div>
         )}
       </div>

@@ -1,7 +1,7 @@
-// src/components/ImageCard.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const ImageCard = ({ image }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -13,52 +13,59 @@ const ImageCard = ({ image }) => {
   };
 
   return (
-    <div 
-      className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ease-in-out transform hover:-translate-y-1 break-inside-avoid"
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "100px" }}
+      className="group relative rounded-2xl overflow-hidden glass-card transition-all duration-500 ease-out transform hover:-translate-y-2 break-inside-avoid shadow-black/50 hover:shadow-indigo-500/10"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Admin badge */}
-      
-        <div className="absolute top-3 right-3 z-10 flex items-center bg-white/90 backdrop-blur-md text-gray-900 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm">
-          <ShieldCheck size={14} className="mr-1 text-gray-800" />
-          Admin
-        </div>
-   
+      <div className="absolute top-3 right-3 z-10 flex items-center bg-black/60 backdrop-blur-md text-zinc-100 px-3 py-1.5 rounded-full text-xs font-semibold border border-zinc-700 shadow-xl">
+        <ShieldCheck size={14} className="mr-1.5 text-indigo-400" />
+        Admin
+      </div>
 
-      <div className="aspect-w-4 aspect-h-3">
+      <div className="aspect-w-4 aspect-h-3 w-full bg-zinc-900 relative">
         <img 
           src={image.src} 
           alt={image.title} 
-          className="w-full h-64 object-cover transition-all duration-700 ease-in-out group-hover:scale-110"
+          className="w-full h-72 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           loading="lazy"
         />
+        
+        {/* Soft overlay that is always slightly visible at bottom for text contrast, and full on hover */}
+        <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${isHovered ? 'opacity-100 bg-black/40' : 'opacity-100 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent'}`} />
       </div>
 
-      {/* Overlay with buttons */}
-      <div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-between p-4 transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="space-y-3 transform transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-          <h3 className="font-bold text-xl text-white">{image.title}</h3>
+      {/* Overlay Content (Revealed on hover) */}
+      <div className={`absolute inset-0 flex flex-col justify-end p-5 transition-all duration-500 z-20 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+        <div className="space-y-4">
           <button
             onClick={handleViewDetails}
-            className="flex items-center px-4 py-2 bg-white/90 text-gray-900 rounded-full font-medium hover:bg-white transition-all duration-300 transform hover:scale-[1.02]"
+            className="w-full flex items-center justify-center px-4 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-xl font-medium transition-all duration-300 shadow-lg group/btn"
           >
-            <Eye size={18} className="mr-2" />
+            <Eye size={18} className="mr-2 group-hover/btn:scale-110 transition-transform" />
             View Details
           </button>
         </div>
       </div>
 
-      {/* Always visible title on card bottom */}
-      <div className="p-4 bg-white transition-all duration-300 group-hover:bg-gray-50 border-t border-gray-100">
+      {/* Info Bar (Always visible) */}
+      <div className="p-4 bg-zinc-950/50 backdrop-blur-lg border-t border-zinc-800/80">
         <div className="flex justify-between items-center">
-          <p className="font-semibold text-gray-900 truncate tracking-tight">{image.title}</p>
+          <p className="font-semibold text-zinc-100 truncate tracking-tight text-sm">
+            {image.title}
+          </p>
           {image.isAdmin && (
-            <ShieldCheck size={16} className="text-gray-600" />
+            <div className="bg-indigo-500/10 p-1.5 rounded-lg border border-indigo-500/20">
+              <ShieldCheck size={14} className="text-indigo-400" />
+            </div>
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

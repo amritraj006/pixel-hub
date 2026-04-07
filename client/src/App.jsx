@@ -20,11 +20,11 @@ const App = () => {
   const location = useLocation();
   const isImgGenRoute = location.pathname === '/image-generator';
   return (
-    <div>
-      <Toaster richColors position="top-center" />
+    <div className="min-h-screen bg-black text-zinc-200 selection:bg-indigo-500/30">
+      <Toaster richColors position="top-center" theme="dark" />
 
       {!isImgGenRoute && <Navbar />}
-      <div className={isImgGenRoute ? "top-0 absolute w-full" : "pt-16 "}>
+      <div className={isImgGenRoute ? "top-0 absolute w-full" : "pt-20 pb-16 min-h-[calc(100vh-100px)]"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/category/:subcategory" element={<SubCategoryPage />} />

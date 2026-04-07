@@ -3,21 +3,59 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0F172A;       /* Slate 900 for neutral contrast */
-  --color-primary-dull: #334155;  /* Slate 700 */
+  --color-primary: #09090b;       /* Zinc 950 */
+  --color-primary-dull: #18181b;  /* Zinc 900 */
+  --color-accent: #6366f1;        /* Indigo 500 */
+  --color-accent-hover: #4f46e5;  /* Indigo 600 */
 }
 
-* {
+@layer base {
+  * {
     font-family: 'Inter', sans-serif;
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 #f8fafc;
-}
+    scrollbar-color: #3f3f46 transparent;
+  }
 
-body {
-    color: #111827;
-    background-color: #f9fafb; /* Lighter cleaner gray */
-}
+  body {
+    color: #e4e4e7; /* Zinc 200 */
+    background-color: #000000; /* Deep black for best contrast with glassmorphism */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
+    color: #fafafa;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl;
+  }
+  
+  .glass-card {
+    @apply bg-zinc-900/50 backdrop-blur-lg border border-zinc-800/80 shadow-2xl;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+  }
+
+  /* Custom scrollbar for webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #52525b;
+  }
 }

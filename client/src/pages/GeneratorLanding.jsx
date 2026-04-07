@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, Image } from 'lucide-react';
+import { ArrowRight, Sparkles, Image as ImageIcon, Zap, Layers } from 'lucide-react';
 import { useUser, SignInButton, SignUpButton } from '@clerk/clerk-react';
 
 const GeneratorLanding = () => {
@@ -9,165 +9,170 @@ const GeneratorLanding = () => {
   const navigate = useNavigate();
 
   const handleTryGenerator = () => {
-    if (isSignedIn) {
-      navigate('/image-generator');
-    }
+    if (isSignedIn) navigate('/image-generator');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-white">
-      {/* Navigation */}
-     
+    <div className="min-h-screen bg-black pt-24 pb-12 relative overflow-hidden">
+      {/* Abstract Background Effects */}
+      <div className="absolute top-0 right-0 w-[50%] h-[500px] bg-indigo-600/15 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[50%] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12 md:py-24">
+      <main className="max-w-[1920px] mx-auto px-6 md:px-12 lg:px-24">
         {/* Hero Section */}
-        <section className="text-center mb-24">
+        <section className="text-center mb-32 relative z-10 pt-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-10 max-w-4xl mx-auto"
           >
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mb-4">
+            <motion.div 
+               animate={{ scale: [1, 1.05, 1] }} 
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-8"
+            >
               <Sparkles className="w-4 h-4 mr-2" />
-              AI-Powered Creativity
-            </span>
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-              Generate Stunning AI Art
+              <span className="text-xs font-bold uppercase tracking-widest">Next-Gen AI Engine</span>
+            </motion.div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight leading-tight">
+              Bring Your Imagination <br className="hidden md:block"/>
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-500 bg-clip-text text-transparent">To Reality</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Transform your ideas into breathtaking visuals with our advanced AI image generator.
+            
+            <p className="text-xl md:text-2xl text-zinc-400 font-medium leading-relaxed max-w-3xl mx-auto mb-12">
+              Harness the power of our advanced neural networks to generate breathtaking, high-resolution visuals from simple text descriptions.
             </p>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row justify-center gap-4"
-          >
-            {isSignedIn ? (
-              <motion.button
-                onClick={handleTryGenerator}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center"
-              >
-                Try Generator Now
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </motion.button>
-            ) : (
-              <SignInButton mode="modal" afterSignInUrl="/image-generator">
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              {isSignedIn ? (
                 <motion.button
+                  onClick={handleTryGenerator}
                   whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center"
+                  whileTap={{ scale: 0.95 }}
+                  className="px-10 py-5 bg-indigo-600 text-white rounded-full font-bold text-lg shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:shadow-indigo-500/50 transition-all flex items-center justify-center"
                 >
-                  Sign In to Generate
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <Zap className="w-5 h-5 mr-3" /> Initialize Engine
                 </motion.button>
-              </SignInButton>
-            )}
+              ) : (
+                <SignInButton mode="modal" afterSignInUrl="/image-generator">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-10 py-5 bg-indigo-600 text-white rounded-full font-bold text-lg shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:shadow-indigo-500/50 transition-all flex items-center justify-center"
+                  >
+                    Authenticate to Access
+                    <ArrowRight className="w-5 h-5 ml-3" />
+                  </motion.button>
+                </SignInButton>
+              )}
+            </div>
           </motion.div>
         </section>
 
-        {/* Features Section */}
-        <section className="mb-24">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How It Works</h2>
+        {/* Concept Architecture Section */}
+        <section className="mb-32 relative z-10 max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">The Generation Pipeline</h2>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+              className="glass-card p-10 rounded-[2rem] border border-zinc-800 relative overflow-hidden group"
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <Image className="w-6 h-6 text-blue-600" />
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center mb-8 relative z-10 shadow-xl">
+                <ImageIcon className="w-8 h-8 text-indigo-400" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Describe Your Vision</h3>
-              <p className="text-gray-600">
-                Enter a detailed text prompt describing the image you want to generate. The more specific you are, the better the results.
+              <h3 className="text-xl font-bold text-white mb-4 tracking-tight">1. Conceptualize</h3>
+              <p className="text-zinc-500 font-medium leading-relaxed">
+                Provide the engine with a detailed textual description. Dictate lighting, styling, atmosphere, and composition.
               </p>
             </motion.div>
 
-            {/* Feature 2 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
-              className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+              className="glass-card p-10 rounded-[2rem] border border-zinc-800 relative overflow-hidden group"
             >
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-purple-600" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center mb-8 relative z-10 shadow-xl text-purple-400">
+                <Layers className="w-8 h-8 text-current" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">AI Generates Art</h3>
-              <p className="text-gray-600">
-                Our advanced AI processes your prompt and creates unique, high-quality images in seconds.
+              <h3 className="text-xl font-bold text-white mb-4 tracking-tight">2. Synthesize</h3>
+              <p className="text-zinc-500 font-medium leading-relaxed">
+                Our state-of-the-art models interpret semantics and synthesize unique ultra-realistic imagery instantly.
               </p>
             </motion.div>
 
-            {/* Feature 3 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+              className="glass-card p-10 rounded-[2rem] border border-zinc-800 relative overflow-hidden group"
             >
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                <ArrowRight className="w-6 h-6 text-green-600" />
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center mb-8 relative z-10 shadow-xl text-rose-400">
+                <ArrowRight className="w-8 h-8 text-current -rotate-45" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Download & Share</h3>
-              <p className="text-gray-600">
-                Download your generated images in high resolution or share them directly with others.
+              <h3 className="text-xl font-bold text-white mb-4 tracking-tight">3. Deploy</h3>
+              <p className="text-zinc-500 font-medium leading-relaxed">
+                Extract high-resolution assets directly or catalog them within your personal curator history.
               </p>
             </motion.div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12 text-center text-white">
+        {/* Global CTA */}
+        <section className="relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
+            className="rounded-[3rem] p-12 md:p-20 text-center bg-zinc-900 border border-zinc-800 relative overflow-hidden shadow-2xl"
           >
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Create Something Amazing?</h2>
-            <p className="text-blue-100 mb-6 text-lg">
-              Join thousands of creators using our AI image generator to bring their ideas to life.
-            </p>
-            {isSignedIn ? (
-              <motion.button
-                onClick={handleTryGenerator}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
-              >
-                Start Generating Now
-              </motion.button>
-            ) : (
-              <SignUpButton mode="modal" afterSignUpUrl="/image-generator">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/10" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_transparent_0%,_black_100%)] opacity-40 mix-blend-overlay" />
+            
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white tracking-tight">Begin Synthesis</h2>
+              <p className="text-zinc-400 mb-10 text-lg md:text-xl font-medium">
+                Step into the vanguard of digital art creation. Access the AI engine and redefine your creative workflow today.
+              </p>
+              
+              {isSignedIn ? (
                 <motion.button
+                  onClick={handleTryGenerator}
                   whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+                  whileTap={{ scale: 0.95 }}
+                  className="px-10 py-5 bg-white text-black rounded-full font-bold text-lg shadow-xl hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all"
                 >
-                  Get Started for Free
+                  Enter Station
                 </motion.button>
-              </SignUpButton>
-            )}
+              ) : (
+                <SignUpButton mode="modal" afterSignUpUrl="/image-generator">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-10 py-5 bg-white text-black rounded-full font-bold text-lg shadow-xl hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all"
+                  >
+                    Acquire Authorization
+                  </motion.button>
+                </SignUpButton>
+              )}
+            </div>
           </motion.div>
         </section>
       </main>
-
-      {/* Footer would be imported here */}
     </div>
   );
 };

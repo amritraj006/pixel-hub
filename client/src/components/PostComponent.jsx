@@ -6,7 +6,6 @@ import { FiArrowRight } from 'react-icons/fi';
 import { useUser } from '@clerk/clerk-react';
 import UserPostCard from './users/UserPostCard';
 
-
 const PostComponent = () => {
   const { user, isLoaded } = useUser();
   const [latestPosts, setLatestPosts] = useState([]);
@@ -32,34 +31,36 @@ const PostComponent = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
+      transition: { staggerChildren: 0.1, when: "beforeChildren" }
     }
   };
 
   return (
-    <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
+      {/* Decorative background glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none" />
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12"
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="text-center mb-16 relative z-10"
       >
-        <h2 className="text-4xl font-bold md:text-5xl text-gray-900 mb-4 inline-block tracking-tight">
-          Latest Community Posts
+        <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-zinc-400 bg-clip-text text-transparent mb-5 tracking-tight">
+          Community Spotlight
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Discover the most recent contributions from our creative community
+        <p className="text-lg text-zinc-400 max-w-2xl mx-auto font-medium">
+          Discover the most recent artistic shots from creators around the globe.
         </p>
       </motion.div>
 
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-none"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full max-w-none relative z-10"
       >
         {latestPosts.map((post) => (
           <UserPostCard 
@@ -69,22 +70,27 @@ const PostComponent = () => {
         ))}
       </motion.div>
 
-      <motion.div 
-        className="flex justify-center mt-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <motion.button
-          onClick={() => navigate('/post')}
-            className="inline-flex items-center px-8 py-3 bg-gray-900 text-white rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 hover:bg-black"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+      {latestPosts.length > 0 && (
+        <motion.div 
+          className="flex justify-center mt-16 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
         >
-          Explore All Posts
-          <FiArrowRight className="ml-2" />
-        </motion.button>
-      </motion.div>
+          <motion.button
+            onClick={() => navigate('/post')}
+            className="flex items-center gap-3 px-8 py-4 bg-zinc-900 border border-zinc-800 text-white rounded-full font-semibold hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all duration-300 hover:border-indigo-500/50 hover:bg-zinc-800 group"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Explore All Posts
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
+              <FiArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-white transition-colors group-hover:translate-x-0.5" />
+            </div>
+          </motion.button>
+        </motion.div>
+      )}
     </div>
   );
 };
