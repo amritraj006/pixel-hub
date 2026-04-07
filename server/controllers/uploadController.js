@@ -6,6 +6,8 @@ async function uploadImage(req, res) {
     category: req.body.category,
     description: req.body.description,
     uploadedBy: req.body.uploaded_by,
+    userName: req.body.user_name || null,
+    userAvatar: req.body.user_avatar || null,
     file: req.file,
   });
 

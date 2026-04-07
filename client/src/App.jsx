@@ -16,8 +16,6 @@ import ImageGenerator from "./pages/ImageGenerator";
 import GeneratorLanding from "./pages/GeneratorLanding";
 
 
-
-
 const App = () => {
   const location = useLocation();
   const isImgGenRoute = location.pathname === '/image-generator';

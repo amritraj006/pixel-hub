@@ -1,7 +1,7 @@
 import { FiHeart, FiDownload, FiMessageCircle, FiX, FiCheck, FiTrash2, FiRefreshCw } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
@@ -20,6 +20,7 @@ const UserPostCard = ({ post, onDelete }) => {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
   const { user } = useUser();
+  const { openSignIn } = useClerk();
 
   const fetchComments = async () => {
     try {
@@ -76,6 +77,10 @@ const UserPostCard = ({ post, onDelete }) => {
   };
 
   const handleLike = async () => {
+    if (!user) {
+      openSignIn();
+      return;
+    }
     try {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/toggle-like`, {
         imageId: post.id,
@@ -156,20 +161,20 @@ const UserPostCard = ({ post, onDelete }) => {
         {/* 1. Header */}
         <div className="flex justify-between items-center p-4 bg-white">
           <div className="flex items-center">
-            {user?.uploaded_by || post.user_avatar ? (
+            {post.user_avatar ? (
               <img
-                src={user?.uploaded_by || post.user_avatar}
+                src={post.user_avatar}
                 alt="Profile"
                 className="w-10 h-10 rounded-full object-cover border border-gray-100"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-sm">
-                {post.uploaded_by ? post.uploaded_by.charAt(0).toUpperCase() : 'U'}
+                {(post.user_name || post.uploaded_by || 'U').charAt(0).toUpperCase()}
               </div>
             )}
             <div className="ml-3">
               <p className="text-sm font-semibold text-gray-900 tracking-tight">
-                {user?.fullName || post.uploaded_by || 'Anonymous'}
+                {post.user_name || post.uploaded_by || 'Anonymous'}
               </p>
               <p className="text-xs text-gray-500">{new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} • {post.category}</p>
             </div>

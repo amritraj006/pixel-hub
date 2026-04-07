@@ -84,6 +84,8 @@ const UploadForm = () => {
     data.append('category', category);
     data.append('description', description);
     data.append('uploaded_by', user?.primaryEmailAddress?.emailAddress || 'anonymous');
+    data.append('user_name', user?.fullName || user?.username || user?.primaryEmailAddress?.emailAddress || 'Anonymous');
+    data.append('user_avatar', user?.imageUrl || '');
     data.append('image', image);
 
     try {

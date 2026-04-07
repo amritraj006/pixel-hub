@@ -2,8 +2,8 @@ const { pool, query } = require('../config/db');
 
 async function createImage(payload) {
   const sql = `
-    INSERT INTO images (title, category, description, uploaded_by, image_url)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO images (title, category, description, uploaded_by, user_name, user_avatar, image_url)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id;
   `;
 
@@ -12,6 +12,8 @@ async function createImage(payload) {
     payload.category,
     payload.description,
     payload.uploadedBy,
+    payload.userName || null,
+    payload.userAvatar || null,
     payload.imageUrl,
   ];
 
@@ -35,7 +37,7 @@ async function fetchLatestImages(limit, userId) {
     SELECT i.*, 
            EXISTS (SELECT 1 FROM image_likes l WHERE l.image_id = i.id AND l.user_id = $2) as is_liked
     FROM images i 
-    ORDER BY i.created_at DESC 
+    ORDER BY i.likes DESC, i.created_at DESC 
     LIMIT $1;
   `;
   const { rows } = await query(sql, [limit, userId || null]);

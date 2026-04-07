@@ -5,7 +5,7 @@ const cloudinary = require('../cloudinary');
 const uploadModel = require('../models/uploadModel');
 const createHttpError = require('../utils/httpError');
 
-async function uploadImage({ title, category, description, uploadedBy, file }) {
+async function uploadImage({ title, category, description, uploadedBy, userName, userAvatar, file }) {
   if (!title || !category || !description || !uploadedBy || !file) {
     throw createHttpError(400, 'Missing required fields');
   }
@@ -15,6 +15,8 @@ async function uploadImage({ title, category, description, uploadedBy, file }) {
     category,
     description,
     uploadedBy,
+    userName,
+    userAvatar,
     imageUrl: file.path,
   });
 }
@@ -100,7 +102,7 @@ async function getUserStats(userEmail) {
 }
 
 async function getLatestPosts(userId) {
-  return uploadModel.fetchLatestImages(4, userId);
+  return uploadModel.fetchLatestImages(3, userId);
 }
 
 module.exports = {
