@@ -13,11 +13,11 @@ const Category = () => {
   }, []);
 
   return (
-    <section className="relative py-24 px-6 md:px-12 lg:px-24">
+    <section className="relative py-24">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[400px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto z-10">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <motion.div 
            initial={{ opacity: 0, y: -20 }}
            whileInView={{ opacity: 1, y: 0 }}

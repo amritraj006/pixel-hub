@@ -92,7 +92,7 @@ const MainBanner = () => {
       </AnimatePresence>
 
       {/* Slide Content */}
-      <div className="container mx-auto px-6 md:px-12 lg:px-24 h-full flex items-center relative z-20 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-20 pb-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}

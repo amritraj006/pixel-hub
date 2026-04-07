@@ -17,7 +17,7 @@ const AllCategory = () => {
       {/* Background glow effects */}
       <div className="absolute top-0 right-1/4 w-[40%] h-[400px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="max-w-[1920px] mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

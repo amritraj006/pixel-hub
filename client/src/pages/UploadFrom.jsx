@@ -138,7 +138,7 @@ const UploadForm = () => {
                  </div>
 
                  {/* Right Column: Image */}
-                 <div className="flex flex-col h-full h-full">
+                 <div className="flex flex-col h-full min-h-[300px]">
                     <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Media File</label>
                     <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" ref={fileInputRef} />
                     

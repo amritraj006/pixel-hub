@@ -4,42 +4,42 @@ import { motion } from 'framer-motion';
 
 const features = [
   {
-    icon: <Search className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Search className="w-5 h-5 text-blue-400" strokeWidth={1.5} />,
     title: "Smart Search",
     description: "AI-powered search finds perfect images in seconds with natural language queries.",
     color: "from-blue-400 to-sky-400",
     glowColor: "shadow-blue-500/20"
   },
   {
-    icon: <Camera className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Camera className="w-5 h-5 text-purple-400" strokeWidth={1.5} />,
     title: "4K Quality",
     description: "Ultra HD resolution for stunning clarity in all your creative projects.",
     color: "from-fuchsia-400 to-purple-400",
     glowColor: "shadow-purple-500/20"
   },
   {
-    icon: <Heart className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Heart className="w-5 h-5 text-rose-400" strokeWidth={1.5} />,
     title: "Curated Collections",
     description: "Hand-selected by design experts for maximum visual impact and quality.",
     color: "from-rose-400 to-pink-400",
     glowColor: "shadow-pink-500/20"
   },
   {
-    icon: <Download className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Download className="w-5 h-5 text-emerald-400" strokeWidth={1.5} />,
     title: "One-Click Downloads",
     description: "Instant access to multiple sizes and formats without any hidden watermarks.",
     color: "from-emerald-400 to-teal-400",
     glowColor: "shadow-emerald-500/20"
   },
   {
-    icon: <Layers className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Layers className="w-5 h-5 text-amber-400" strokeWidth={1.5} />,
     title: "10M+ Assets",
     description: "Massive library with fresh, exclusive content added daily.",
     color: "from-amber-400 to-orange-400",
     glowColor: "shadow-orange-500/20"
   },
   {
-    icon: <Shield className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Shield className="w-5 h-5 text-indigo-400" strokeWidth={1.5} />,
     title: "Safe & Legal",
     description: "All images are properly licensed for personal and commercial usage.",
     color: "from-indigo-400 to-blue-500",
@@ -56,7 +56,7 @@ const FeaturesSection = () => {
         <div className="absolute bottom-1/4 -right-[10%] w-[30%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]" />
       </div>
       
-      <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-24 z-10">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -99,7 +99,7 @@ const FeaturesSection = () => {
                 
                 <div className="flex items-center gap-4 mb-5 relative z-10">
                   <div className={`w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg ${feature.glowColor}`}>
-                    <div className={`bg-gradient-to-br ${feature.color} bg-clip-text text-transparent`}>
+                    <div>
                       {feature.icon}
                     </div>
                   </div>

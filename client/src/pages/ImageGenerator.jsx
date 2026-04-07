@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUser, SignInButton } from '@clerk/clerk-react';
-import { FiDownload, FiTrash2, FiClock, FiSettings, FiImage, FiCpu, FiAlertCircle } from 'react-icons/fi';
+import { useUser, SignInButton, UserButton } from '@clerk/clerk-react';
+import { Link } from 'react-router-dom';
+import { FiDownload, FiTrash2, FiClock, FiSettings, FiImage, FiCpu, FiAlertCircle, FiLoader } from 'react-icons/fi';
 import { Toaster, toast } from 'sonner';
 
 const ImageGenerator = () => {
@@ -99,11 +100,34 @@ const ImageGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-24 px-4 sm:px-6 lg:px-12 relative overflow-hidden flex pb-6">
+    <div className="min-h-screen bg-black pt-24 relative overflow-hidden flex flex-col pb-6">
       <Toaster theme="dark"  />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black pointer-events-none" />
 
-      <div className={`max-w-[1920px] mx-auto w-full flex flex-col lg:flex-row gap-6 relative z-10 transition-all duration-500`}>
+      {/* Embedded Custom Header */}
+      <div className="absolute top-0 left-0 w-full z-50 h-20 flex items-center bg-black/40 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <Link to="/" className="flex items-center space-x-2 group transition-all duration-300">
+            <div className="relative flex items-center justify-center w-10 h-10 bg-indigo-500/10 rounded-xl border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all">
+              <span className="text-xl group-hover:rotate-12 transition-transform">📷</span>
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent tracking-tight">
+              PixelHub
+            </span>
+          </Link>
+          {isSignedIn ? (
+            <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: "w-10 h-10 border border-zinc-800" } }} />
+          ) : (
+            <SignInButton mode="modal">
+              <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-500 transition-colors">
+                Sign In
+              </button>
+            </SignInButton>
+          )}
+        </div>
+      </div>
+
+      <div className={`max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6 relative z-10 transition-all duration-500`}>
         
         {/* Main Interface Window */}
         <div className={`flex-1 flex flex-col gap-6 ${showHistory ? 'lg:w-3/4' : 'w-full'}`}>

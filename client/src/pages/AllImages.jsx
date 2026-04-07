@@ -43,7 +43,7 @@ const AllImages = () => {
       {/* Background glow effects */}
       <div className="absolute top-0 left-1/4 w-[50%] h-[300px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="max-w-[1920px] mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
         <motion.div 
            initial={{ opacity: 0, y: -20 }}
            animate={{ opacity: 1, y: 0 }}

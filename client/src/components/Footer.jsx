@@ -18,7 +18,7 @@ const Footer = () => {
       {/* Decorative top gradient */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent opacity-50" />
       
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">
           {/* Brand Column */}
           <motion.div 

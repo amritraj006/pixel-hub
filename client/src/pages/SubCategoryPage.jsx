@@ -15,7 +15,7 @@ const SubCategoryPage = () => {
        {/* Background glow effects */}
        <div className="absolute top-10 right-1/4 w-[30%] h-[300px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="max-w-[1920px] mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header Section */}
         <motion.div 

@@ -14,7 +14,7 @@ const Home = () => {
       <div className="w-full">
         <MainBanner />
       </div>
-      <div className="w-full max-w-[1920px] mx-auto">
+      <div className="w-full max-w-7xl mx-auto">
         <FeaturesSection />
         <Category />
         <PostComponent />

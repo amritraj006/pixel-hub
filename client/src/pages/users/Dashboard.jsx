@@ -89,24 +89,24 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-black pt-24 pb-12 relative overflow-hidden">
       <Toaster position="top-center" toastOptions={{ style: { background: '#18181b', color: '#fff', border: '1px solid #3f3f46' } }} />
       
       {/* Glow Effects */}
       <div className="absolute top-0 right-1/3 w-[30%] h-[300px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-[1600px] mx-auto relative z-10">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-4xl md:text-5xl font-bold text-white mb-10 tracking-tight">
           Creator Studio
         </motion.h1>
 
         <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
-          <Tab.List className="flex space-x-2 rounded-2xl bg-zinc-900/50 block w-max p-1.5 border border-zinc-800 shadow-xl backdrop-blur-md">
+          <Tab.List className="flex space-x-2 rounded-2xl bg-zinc-900/50 w-full sm:w-max p-1.5 border border-zinc-800 shadow-xl backdrop-blur-md overflow-x-auto">
             {['Overview', 'Published Assets'].map((tab, idx) => (
               <Tab
                 key={idx}
                 className={({ selected }) =>
-                  `px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none ${
+                  `px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 focus:outline-none whitespace-nowrap ${
                     selected ? 'bg-indigo-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
                   }`
                 }

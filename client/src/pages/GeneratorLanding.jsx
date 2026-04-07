@@ -18,7 +18,7 @@ const GeneratorLanding = () => {
       <div className="absolute top-0 right-0 w-[50%] h-[500px] bg-indigo-600/15 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[50%] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <main className="max-w-[1920px] mx-auto px-6 md:px-12 lg:px-24">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <section className="text-center mb-32 relative z-10 pt-10">
           <motion.div
