@@ -1,11 +1,14 @@
-const fs = require('fs/promises');
-const path = require('path');
-const cloudinary = require('../cloudinary');
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cloudinary from '../config/cloudinary.js';
+import * as uploadModel from '../models/upload.model.js';
+import createHttpError from '../utils/httpError.js';
 
-const uploadModel = require('../models/uploadModel');
-const createHttpError = require('../utils/httpError');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-async function uploadImage({ title, category, description, uploadedBy, userName, userAvatar, file }) {
+export async function uploadImage({ title, category, description, uploadedBy, userName, userAvatar, file }) {
   if (!title || !category || !description || !uploadedBy || !file) {
     throw createHttpError(400, 'Missing required fields');
   }
@@ -21,11 +24,11 @@ async function uploadImage({ title, category, description, uploadedBy, userName,
   });
 }
 
-async function getAllImages(userId) {
+export async function getAllImages(userId) {
   return uploadModel.fetchImages(userId);
 }
 
-async function toggleLike({ imageId, userId }) {
+export async function toggleLike({ imageId, userId }) {
   if (!imageId || !userId) {
     throw createHttpError(400, 'imageId and userId are required');
   }
@@ -33,7 +36,7 @@ async function toggleLike({ imageId, userId }) {
   return uploadModel.toggleImageLike(Number(imageId), String(userId));
 }
 
-async function getUserPosts(userEmail, userId) {
+export async function getUserPosts(userEmail, userId) {
   if (!userEmail) {
     throw createHttpError(400, 'user_email is required');
   }
@@ -41,7 +44,7 @@ async function getUserPosts(userEmail, userId) {
   return uploadModel.fetchUserPosts(userEmail, userId);
 }
 
-async function removePost(id) {
+export async function removePost(id) {
   const deletedPost = await uploadModel.deleteImage(Number(id));
 
   if (!deletedPost) {
@@ -70,7 +73,7 @@ async function removePost(id) {
   }
 }
 
-async function editPost(id, { title, category, description }) {
+export async function editPost(id, { title, category, description }) {
   if (!title || !category || !description) {
     throw createHttpError(400, 'title, category and description are required');
   }
@@ -86,7 +89,7 @@ async function editPost(id, { title, category, description }) {
   }
 }
 
-async function getUserStats(userEmail) {
+export async function getUserStats(userEmail) {
   if (!userEmail) {
     throw createHttpError(400, 'user_email is required');
   }
@@ -101,17 +104,6 @@ async function getUserStats(userEmail) {
   };
 }
 
-async function getLatestPosts(userId) {
+export async function getLatestPosts(userId) {
   return uploadModel.fetchLatestImages(3, userId);
 }
-
-module.exports = {
-  uploadImage,
-  getAllImages,
-  toggleLike,
-  getUserPosts,
-  removePost,
-  editPost,
-  getUserStats,
-  getLatestPosts,
-};

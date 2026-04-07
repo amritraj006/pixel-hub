@@ -1,6 +1,6 @@
-const { query } = require('../config/db');
+import { query } from '../config/db.js';
 
-async function addComment(postId, userId, userName, userAvatar, text, parentId) {
+export async function addComment(postId, userId, userName, userAvatar, text, parentId) {
   const sql = `
     INSERT INTO comments (post_id, user_id, user_name, user_avatar, text, parent_id)
     VALUES ($1, $2, $3, $4, $5, $6)
@@ -10,7 +10,7 @@ async function addComment(postId, userId, userName, userAvatar, text, parentId) 
   return rows[0];
 }
 
-async function fetchComments(postId) {
+export async function fetchComments(postId) {
   // Fetch all comments and sort by created_at ascending
   const sql = `
     SELECT * FROM comments 
@@ -21,9 +21,8 @@ async function fetchComments(postId) {
   return rows;
 }
 
-async function deleteComment(id, userId) {
+export async function deleteComment(id, userId) {
   // Allow deleting if userId matches or if the comment is a child comment deleting by the same user.
-  // Realistically we also might want owners to delete, but for now just author.
   const sql = `
     DELETE FROM comments
     WHERE id = $1 AND user_id = $2
@@ -32,9 +31,3 @@ async function deleteComment(id, userId) {
   const { rows } = await query(sql, [id, userId]);
   return rows[0];
 }
-
-module.exports = {
-  addComment,
-  fetchComments,
-  deleteComment,
-};

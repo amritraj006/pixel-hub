@@ -1,6 +1,6 @@
-const { query } = require('../config/db');
+import { query } from '../config/db.js';
 
-async function saveHistory(userId, prompt, imageUrl) {
+export async function saveHistory(userId, prompt, imageUrl) {
   const sql = `
     INSERT INTO ai_generations (user_id, prompt, image_url)
     VALUES ($1, $2, $3)
@@ -10,7 +10,7 @@ async function saveHistory(userId, prompt, imageUrl) {
   return rows[0];
 }
 
-async function fetchHistory(userId) {
+export async function fetchHistory(userId) {
   const sql = `
     SELECT * FROM ai_generations
     WHERE user_id = $1
@@ -20,7 +20,7 @@ async function fetchHistory(userId) {
   return rows;
 }
 
-async function deleteHistory(id, userId) {
+export async function deleteHistory(id, userId) {
   const sql = `
     DELETE FROM ai_generations
     WHERE id = $1 AND user_id = $2
@@ -29,9 +29,3 @@ async function deleteHistory(id, userId) {
   const { rows } = await query(sql, [id, userId]);
   return rows[0];
 }
-
-module.exports = {
-  saveHistory,
-  fetchHistory,
-  deleteHistory,
-};

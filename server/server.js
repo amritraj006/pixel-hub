@@ -1,5 +1,5 @@
-const app = require('./app');
-const initializeDatabase = require('./config/initDb');
+import app from './app.js';
+import initializeDatabase from './config/initDb.js';
 
 const PORT = Number(process.env.PORT) || 8000;
 

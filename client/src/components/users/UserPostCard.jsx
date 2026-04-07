@@ -1,4 +1,4 @@
-import { FiHeart, FiDownload, FiMessageCircle, FiX, FiCheck, FiTrash2, FiRefreshCw } from 'react-icons/fi';
+import { FiHeart, FiDownload, FiMessageCircle, FiX, FiCheck } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
@@ -6,11 +6,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
 
-const UserPostCard = ({ post, onDelete }) => {
+const UserPostCard = ({ post }) => {
   const [isLiked, setIsLiked] = useState(post.is_liked || false);
   const [likeCount, setLikeCount] = useState(post.likes || 0);
   const [showComments, setShowComments] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [showFullImage, setShowFullImage] = useState(false);
 
   // Comment States
@@ -116,23 +115,7 @@ const UserPostCard = ({ post, onDelete }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
 
-    setIsDeleting(true);
-    try {
-      const toastId = toast.loading('Deleting post...');
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/upload/delete-post/${post.id}`);
-      toast.success('Post deleted successfully', { id: toastId });
-      if (onDelete) onDelete(post.id);
-    } catch (error) {
-      console.error('Delete error:', error);
-      toast.error('Failed to delete post');
-      setIsDeleting(false);
-    }
-  };
-
-  const isOwner = user && (user.id === post.user_id || user.primaryEmailAddress?.emailAddress === post.uploaded_by);
 
   return (
     <>
@@ -179,16 +162,6 @@ const UserPostCard = ({ post, onDelete }) => {
               <p className="text-xs text-gray-500">{new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} • {post.category}</p>
             </div>
           </div>
-          {isOwner && (
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className={`p-2 rounded-full ${isDeleting ? 'text-gray-400' : 'text-gray-400 hover:text-red-500 hover:bg-gray-50'} transition-colors`}
-              title="Delete post"
-            >
-              {isDeleting ? <FiRefreshCw className="animate-spin" /> : <FiTrash2 />}
-            </button>
-          )}
         </div>
 
         <div className="w-full bg-gray-100 flex items-center justify-center relative group overflow-hidden">
@@ -196,7 +169,7 @@ const UserPostCard = ({ post, onDelete }) => {
             src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}
             alt={post.title}
             onClick={() => setShowFullImage(true)}
-            className="w-full h-auto max-h-[700px] object-cover cursor-pointer transition-transform duration-700 ease-in-out group-hover:scale-105"
+            className="w-full h-72 object-cover cursor-pointer transition-transform duration-700 ease-in-out group-hover:scale-105"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/fallback.jpg';

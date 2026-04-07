@@ -1,11 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { query } from './db.js';
 
-const { query } = require('./db');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 
-async function initializeDatabase() {
+export async function initializeDatabase() {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
@@ -51,4 +54,4 @@ async function initializeDatabase() {
   `);
 }
 
-module.exports = initializeDatabase;
+export default initializeDatabase;

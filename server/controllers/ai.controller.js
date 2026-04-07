@@ -1,10 +1,14 @@
-const aiImageService = require('../services/aiImageService');
-const historyModel = require('../models/historyModel');
-const cloudinary = require('../cloudinary');
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as aiImageService from '../services/ai.service.js';
+import * as historyModel from '../models/history.model.js';
+import cloudinary from '../config/cloudinary.js';
 
-async function generateImage(req, res) {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export async function generateImage(req, res) {
   const { prompt, userId } = req.body;
   const result = await aiImageService.generateImage(prompt);
 
@@ -37,13 +41,13 @@ async function generateImage(req, res) {
   }
 }
 
-async function getHistory(req, res) {
+export async function getHistory(req, res) {
   const { userId } = req.params;
   const history = await historyModel.fetchHistory(userId);
   res.json(history);
 }
 
-async function deleteHistory(req, res) {
+export async function deleteHistory(req, res) {
   const { id } = req.params;
   const { userId } = req.body;
   const record = await historyModel.deleteHistory(id, userId);
@@ -71,9 +75,3 @@ async function deleteHistory(req, res) {
   }
   res.json({ success: true, message: 'Deleted successfully' });
 }
-
-module.exports = {
-  generateImage,
-  getHistory,
-  deleteHistory,
-};

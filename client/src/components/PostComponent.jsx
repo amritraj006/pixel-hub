@@ -59,13 +59,12 @@ const PostComponent = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full max-w-none"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-none"
       >
         {latestPosts.map((post) => (
           <UserPostCard 
             key={post.id} 
             post={post} 
-            onDelete={(deletedId) => setLatestPosts(prev => prev.filter(p => p.id !== deletedId))} 
           />
         ))}
       </motion.div>

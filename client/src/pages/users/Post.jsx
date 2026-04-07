@@ -332,7 +332,7 @@ const Post = () => {
 
         {/* Gallery Grid */}
         {filteredImages.length > 0 ? (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <AnimatePresence>
               {filteredImages.map((img) => (
                 <motion.div
@@ -346,7 +346,6 @@ const Post = () => {
                 >
                   <UserPostCard 
                     post={img} 
-                    onDelete={(deletedId) => setImages(prev => prev.filter(p => p.id !== deletedId))}
                   />
                 </motion.div>
               ))}

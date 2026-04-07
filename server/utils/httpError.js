@@ -4,4 +4,4 @@ function createHttpError(statusCode, message) {
   return error;
 }
 
-module.exports = createHttpError;
+export default createHttpError;

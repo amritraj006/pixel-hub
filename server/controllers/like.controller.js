@@ -1,6 +1,6 @@
-const likesService = require('../services/likesService');
+import * as likesService from '../services/like.service.js';
 
-async function isLiked(req, res) {
+export async function isLiked(req, res) {
   const liked = await likesService.isLiked(
     req.query.user_email,
     req.query.category,
@@ -10,7 +10,7 @@ async function isLiked(req, res) {
   res.json({ liked });
 }
 
-async function like(req, res) {
+export async function like(req, res) {
   await likesService.addLike(
     req.body.user_email,
     req.body.category,
@@ -20,7 +20,7 @@ async function like(req, res) {
   res.json({ success: true });
 }
 
-async function unlike(req, res) {
+export async function unlike(req, res) {
   await likesService.unlike(
     req.body.user_email,
     req.body.category,
@@ -30,20 +30,12 @@ async function unlike(req, res) {
   res.json({ success: true });
 }
 
-async function likeCount(req, res) {
+export async function likeCount(req, res) {
   const count = await likesService.getLikeCount(req.query.user_email);
   res.json({ count });
 }
 
-async function likedImages(req, res) {
+export async function likedImages(req, res) {
   const images = await likesService.getLikedImages(req.query.user_email);
   res.json(images);
 }
-
-module.exports = {
-  isLiked,
-  like,
-  unlike,
-  likeCount,
-  likedImages,
-};

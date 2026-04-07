@@ -1,6 +1,6 @@
-const { pool, query } = require('../config/db');
+import { pool, query } from '../config/db.js';
 
-async function createImage(payload) {
+export async function createImage(payload) {
   const sql = `
     INSERT INTO images (title, category, description, uploaded_by, user_name, user_avatar, image_url)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -21,7 +21,7 @@ async function createImage(payload) {
   return rows[0];
 }
 
-async function fetchImages(userId) {
+export async function fetchImages(userId) {
   const sql = `
     SELECT i.*, 
            EXISTS (SELECT 1 FROM image_likes l WHERE l.image_id = i.id AND l.user_id = $1) as is_liked
@@ -32,7 +32,7 @@ async function fetchImages(userId) {
   return rows;
 }
 
-async function fetchLatestImages(limit, userId) {
+export async function fetchLatestImages(limit, userId) {
   const sql = `
     SELECT i.*, 
            EXISTS (SELECT 1 FROM image_likes l WHERE l.image_id = i.id AND l.user_id = $2) as is_liked
@@ -44,7 +44,7 @@ async function fetchLatestImages(limit, userId) {
   return rows;
 }
 
-async function fetchUserPosts(userEmail, userId) {
+export async function fetchUserPosts(userEmail, userId) {
   const sql = `
     SELECT i.*, 
            EXISTS (SELECT 1 FROM image_likes l WHERE l.image_id = i.id AND l.user_id = $2) as is_liked
@@ -56,7 +56,7 @@ async function fetchUserPosts(userEmail, userId) {
   return rows;
 }
 
-async function fetchUserStats(userEmail) {
+export async function fetchUserStats(userEmail) {
   const sql = `
     SELECT
       COUNT(*)::int AS "totalPosts",
@@ -78,7 +78,7 @@ async function fetchUserStats(userEmail) {
   return rows[0];
 }
 
-async function updateImage(id, payload) {
+export async function updateImage(id, payload) {
   const sql = `
     UPDATE images
     SET title = $1, category = $2, description = $3
@@ -96,7 +96,7 @@ async function updateImage(id, payload) {
   return rows[0];
 }
 
-async function deleteImage(id) {
+export async function deleteImage(id) {
   const { rows } = await query(
     'DELETE FROM images WHERE id = $1 RETURNING image_url',
     [id]
@@ -104,7 +104,7 @@ async function deleteImage(id) {
   return rows[0];
 }
 
-async function toggleImageLike(imageId, userId) {
+export async function toggleImageLike(imageId, userId) {
   const client = await pool.connect();
 
   try {
@@ -149,14 +149,3 @@ async function toggleImageLike(imageId, userId) {
     client.release();
   }
 }
-
-module.exports = {
-  createImage,
-  fetchImages,
-  fetchLatestImages,
-  fetchUserPosts,
-  fetchUserStats,
-  updateImage,
-  deleteImage,
-  toggleImageLike,
-};

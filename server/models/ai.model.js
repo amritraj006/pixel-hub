@@ -1,8 +1,8 @@
-const createHttpError = require('../utils/httpError');
+import createHttpError from '../utils/httpError.js';
 
 const POLLINATIONS_BASE_URL = 'https://gen.pollinations.ai/image';
 
-async function generateImage({ prompt, seed }) {
+export async function generateImage({ prompt, seed }) {
   const apiKey = process.env.POLLINATIONS_API_KEY;
 
   if (!apiKey) {
@@ -83,7 +83,3 @@ async function generateImage({ prompt, seed }) {
 
   throw createHttpError(lastStatus, lastMessage);
 }
-
-module.exports = {
-  generateImage,
-};
