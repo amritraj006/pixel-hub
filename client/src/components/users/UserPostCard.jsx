@@ -355,7 +355,7 @@ const UserPostCard = ({ post }) => {
             >
               <button
                 onClick={() => setShowFullImage(false)}
-                className="absolute -top-12 right-0 sm:-right-8 sm:-top-8 bg-black/50 border border-zinc-800 hover:bg-zinc-800 text-white rounded-full p-2.5 transition-all z-10 backdrop-blur-md"
+                className="absolute -top-12  right-0 sm:-right-8 sm:-top-2 bg-black/50 border border-zinc-800 hover:bg-zinc-800 text-white rounded-full p-2.5 transition-all z-10 backdrop-blur-md"
                 title="Close dialog"
               >
                 <FiX className="h-5 w-5" />
