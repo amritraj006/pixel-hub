@@ -1,12 +1,13 @@
 import { FiHeart, FiDownload, FiMessageCircle, FiX, FiCheck } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { saveAs } from 'file-saver';
 import axios from 'axios';
+import { useSocket } from '../../context/SocketContext';
 
-const UserPostCard = ({ post }) => {
+const UserPostCard = ({ post, autoOpenComments = false, initialReplyTo = null, parentId = null }) => {
   const [isLiked, setIsLiked] = useState(post.is_liked || false);
   const [likeCount, setLikeCount] = useState(post.likes || 0);
   const [showComments, setShowComments] = useState(false);
@@ -20,6 +21,57 @@ const UserPostCard = ({ post }) => {
 
   const { user } = useUser();
   const { openSignIn } = useClerk();
+  const { socket } = useSocket();
+
+  // Auto-open comments + set reply when arriving from a notification
+  useEffect(() => {
+    if (autoOpenComments) {
+      fetchComments();
+      setShowComments(true);
+      if (initialReplyTo) {
+        // Pre-fill replyingTo with the commenter's info from the notification
+        setReplyingTo({
+          user_name: initialReplyTo.sender_name || 'Someone',
+          id: parentId, // Correctly set the parent comment ID for the reply
+        });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoOpenComments]);
+
+  // Sync internal state if post props change (e.g. after search or filter)
+  useEffect(() => {
+    setIsLiked(post.is_liked || false);
+    setLikeCount(post.likes || 0);
+  }, [post.id, post.is_liked, post.likes]);
+
+  // Join post room on mount to receive real-time events (likes, comments)
+  useEffect(() => {
+    if (socket) {
+      socket.emit('join_post', post.id);
+      return () => socket.emit('leave_post', post.id);
+    }
+  }, [socket, post.id]);
+
+  // Listen to real-time new comments (only duplicate-guard when panel is open)
+  useEffect(() => {
+    if (socket && showComments) {
+      const handleNewComment = (newComment) => {
+        setComments((prev) => {
+          if (!prev.find((c) => c.id === newComment.id)) {
+            return [...prev, newComment];
+          }
+          return prev;
+        });
+      };
+
+      socket.on('new-comment', handleNewComment);
+
+      return () => {
+        socket.off('new-comment', handleNewComment);
+      };
+    }
+  }, [socket, showComments, post.id]);
 
   const fetchComments = async () => {
     try {
@@ -39,6 +91,7 @@ const UserPostCard = ({ post }) => {
       const payload = {
         postId: post.id,
         userId: user.id,
+        userEmail: user.primaryEmailAddress?.emailAddress,
         userName: user.fullName || user.username || 'Anonymous',
         userAvatar: user.imageUrl || '',
         text: newComment,
@@ -80,22 +133,32 @@ const UserPostCard = ({ post }) => {
       openSignIn();
       return;
     }
+    
+    // Optimistic UI update
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+
+    setIsLiked(!previousIsLiked);
+    setLikeCount((prev) => (previousIsLiked ? prev - 1 : prev + 1));
+
     try {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/toggle-like`, {
         imageId: post.id,
         userId: user.id,
+        userEmail: user.primaryEmailAddress?.emailAddress,
+        userName: user.fullName || user.username || user.firstName || 'Anonymous',
+        userAvatar: user.imageUrl || '',
       });
 
-      if (res.data.liked) {
-        setIsLiked(true);
-        setLikeCount((prev) => prev + 1);
-        toast.success('Liked!');
-      } else {
-        setIsLiked(false);
-        setLikeCount((prev) => prev - 1);
-        toast.success('Unliked!');
+      // Synchronize with backend response if necessary
+      setIsLiked(res.data.liked);
+      if (res.data.newLikeCount !== undefined) {
+        setLikeCount(res.data.newLikeCount);
       }
     } catch (err) {
+      // Revert on failure
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
       console.error('Like error:', err);
       toast.error('Failed to update like');
     }
@@ -346,6 +409,15 @@ const UserPostCard = ({ post }) => {
             className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4 sm:p-8 backdrop-blur-xl"
             onClick={() => setShowFullImage(false)}
           >
+            {/* Close button - Positioned below the 80px (h-20) navbar */}
+            <button
+              onClick={() => setShowFullImage(false)}
+              className="fixed top-24 right-6 sm:right-10 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white rounded-full p-3 transition-all z-[110] backdrop-blur-md shadow-2xl"
+              title="Close dialog"
+            >
+              <FiX className="h-6 w-6" />
+            </button>
+
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -353,14 +425,6 @@ const UserPostCard = ({ post }) => {
               className="relative max-w-6xl w-full max-h-[90vh] flex flex-col items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setShowFullImage(false)}
-                className="absolute -top-12  right-0 sm:-right-8 sm:-top-2 bg-black/50 border border-zinc-800 hover:bg-zinc-800 text-white rounded-full p-2.5 transition-all z-10 backdrop-blur-md"
-                title="Close dialog"
-              >
-                <FiX className="h-5 w-5" />
-              </button>
-
               <div className="relative group w-auto h-auto max-w-full max-h-[80vh]">
                 <img
                   src={post.image_url?.startsWith('http') ? post.image_url : `${import.meta.env.VITE_BACKEND_URL}/uploads/${post.image_url}`}

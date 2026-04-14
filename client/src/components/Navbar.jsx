@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Menu, X, Heart, Upload, LayoutGrid, Sparkles,
-  Image as ImageIcon, Home, ChevronRight, LogIn
+  Image as ImageIcon, Home, ChevronRight, LogIn, Bell
 } from 'lucide-react';
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSocket } from '../context/SocketContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [likeCount, setLikeCount] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const { socket } = useSocket();
 
   // Close sidebar on route change
   useEffect(() => {
@@ -53,6 +56,33 @@ const Navbar = () => {
     return () => window.removeEventListener('likeUpdated', handleLikeUpdate);
   }, [user]);
 
+  // Fetch unread notification count
+  useEffect(() => {
+    const fetchUnreadCount = () => {
+      if (user) {
+        const email = user.primaryEmailAddress?.emailAddress || '';
+        const clerkId = user.id;
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications/unread-count?userId=${email}&clerkId=${clerkId}`)
+          .then(res => res.json())
+          .then(data => setUnreadNotifications(data.count))
+          .catch(err => console.error('Failed to fetch unread notifications:', err));
+      }
+    };
+    
+    fetchUnreadCount();
+  }, [user, location.pathname]); // Update when location changes (in case they read it)
+
+  // Listen for real-time notifications
+  useEffect(() => {
+    if (socket) {
+      socket.on('new-notification', (notif) => {
+        setUnreadNotifications(prev => prev + 1);
+        // Optional: show a quick toast alert
+      });
+      return () => socket.off('new-notification');
+    }
+  }, [socket]);
+
   const navLinks = [
     { path: '/', name: 'Home', icon: Home },
     { path: '/all-images', name: 'Explore', icon: LayoutGrid },
@@ -61,6 +91,7 @@ const Navbar = () => {
   ];
 
   const userActions = [
+    { path: '/notifications', name: 'Notifications', icon: Bell, count: unreadNotifications },
     { path: '/liked', name: 'Favorites', icon: Heart, count: likeCount },
     { path: '/upload', name: 'Upload', icon: Upload },
     { path: '/my-dashboard', name: 'Dashboard', icon: LayoutGrid },

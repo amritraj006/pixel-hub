@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch, FiFilter, FiX, FiEye, FiLoader, FiAlertCircle } from 'react-icons/fi';
 import { FaPaintBrush, FaPalette, FaCamera, FaCode } from 'react-icons/fa';
 import UserPostCard from '../../components/users/UserPostCard';
+import { useLocation } from 'react-router-dom';
 
 const Post = () => {
   const [images, setImages] = useState([]);
@@ -14,6 +15,10 @@ const Post = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { isLoaded, isSignedIn, user } = useUser();
+  const location = useLocation();
+
+  // From notification click: targetPostId, openComments, replyTo
+  const notifState = location.state || {};
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -29,6 +34,18 @@ const Post = () => {
     };
     if (isLoaded) fetchImages();
   }, [user, isLoaded]);
+
+  // Auto-scroll to the target post after images load (from notification click)
+  useEffect(() => {
+    if (!loading && notifState.targetPostId) {
+      const el = document.getElementById(`post-card-${notifState.targetPostId}`);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 400);
+      }
+    }
+  }, [loading, notifState.targetPostId]);
 
   const categories = [...new Set(images.map(img => img.category))];
 
@@ -231,8 +248,21 @@ const Post = () => {
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             <AnimatePresence>
               {filteredImages.map((img) => (
-                <motion.div key={img.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4 }} className="break-inside-avoid">
-                  <UserPostCard post={img} />
+                <motion.div
+                  key={img.id}
+                  id={`post-card-${img.id}`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  className="break-inside-avoid"
+                >
+                  <UserPostCard
+                    post={img}
+                    autoOpenComments={notifState.openComments && notifState.targetPostId === img.id}
+                    initialReplyTo={notifState.targetPostId === img.id ? notifState.replyTo : null}
+                    parentId={notifState.targetPostId === img.id ? notifState.parentId : null}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>

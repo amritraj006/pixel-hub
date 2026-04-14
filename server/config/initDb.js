@@ -52,6 +52,66 @@ export async function initializeDatabase() {
       UNIQUE (user_email, category, title)
     );
   `);
+
+  await query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id VARCHAR(255) NOT NULL,
+      sender_id VARCHAR(255) NOT NULL,
+      sender_name VARCHAR(255),
+      sender_avatar TEXT,
+      type VARCHAR(50) NOT NULL,
+      post_id INTEGER NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+      is_read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  // Migration: support older notification schema already present in production DBs
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS user_id VARCHAR(255);`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sender_id VARCHAR(255);`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sender_name VARCHAR(255);`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sender_avatar TEXT;`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS post_id INTEGER;`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS recipient_email VARCHAR(255);`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS actor_name VARCHAR(255);`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS actor_avatar TEXT;`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS target_url TEXT;`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS message TEXT;`);
+  await query(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS comment_id INTEGER;`);
+
+  await query(`
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name = 'notifications' AND column_name = 'recipient_email'
+      ) THEN
+        ALTER TABLE notifications ALTER COLUMN recipient_email DROP NOT NULL;
+      END IF;
+
+      IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name = 'notifications' AND column_name = 'actor_name'
+      ) THEN
+        ALTER TABLE notifications ALTER COLUMN actor_name DROP NOT NULL;
+      END IF;
+    END $$;
+  `);
+
+  await query(`
+    UPDATE notifications
+    SET
+      user_id = COALESCE(user_id, recipient_email),
+      sender_name = COALESCE(sender_name, actor_name),
+      sender_avatar = COALESCE(sender_avatar, actor_avatar)
+    WHERE
+      user_id IS NULL
+      OR sender_name IS NULL
+      OR sender_avatar IS NULL;
+  `);
 }
 
 export default initializeDatabase;

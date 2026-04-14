@@ -31,3 +31,9 @@ export async function deleteComment(id, userId) {
   const { rows } = await query(sql, [id, userId]);
   return rows[0];
 }
+
+export async function fetchCommentById(id) {
+  const sql = `SELECT * FROM comments WHERE id = $1;`;
+  const { rows } = await query(sql, [id]);
+  return rows[0];
+}
