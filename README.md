@@ -11,6 +11,7 @@ Pixel Hub is a full-stack image platform built with React, Vite, Express, Postgr
 - Upload community images with title, category, and description
 - View the latest community posts on the homepage
 - Like, unlike, comment on, and download community posts
+- Receive real-time notifications when your posts are liked or commented on
 - Manage uploaded posts from a creator dashboard
 - Generate AI images from text prompts
 - Store AI generation history per user
@@ -26,12 +27,14 @@ Pixel Hub is a full-stack image platform built with React, Vite, Express, Postgr
 - Framer Motion
 - Clerk
 - Axios
+- Socket.IO client
 
 ### Backend
 
 - Node.js
 - Express 5
 - PostgreSQL (`pg`)
+- Socket.IO (real-time events)
 - Cloudinary + Multer
 - Pollinations image generation API
 
@@ -64,10 +67,11 @@ User-uploaded images are stored through the backend and shown in:
 
 These posts support:
 
-- likes
-- threaded comments
-- downloads
+- likes (with optimistic UI updates)
+- threaded comments and replies
+- downloads (no watermarks)
 - edit/delete for the owner
+- real-time notifications via Socket.IO
 
 ### AI generator
 
@@ -115,10 +119,11 @@ On server startup, the app automatically creates these tables if they do not exi
 - `image_likes`
 - `likes`
 
-Two more tables are required by the codebase but are not currently created in `server/config/initDb.js`:
+Three more tables are required by the codebase but are not currently created in `server/config/initDb.js`:
 
 - `comments`
 - `ai_generations`
+- `notifications`
 
 Create them manually before using comments or the AI generator:
 
@@ -139,6 +144,19 @@ CREATE TABLE IF NOT EXISTS ai_generations (
   user_id VARCHAR(255) NOT NULL,
   prompt TEXT NOT NULL,
   image_url TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id SERIAL PRIMARY KEY,
+  recipient_email VARCHAR(255) NOT NULL,
+  sender_name VARCHAR(255) DEFAULT 'Someone',
+  sender_avatar VARCHAR(255),
+  type VARCHAR(50) NOT NULL,
+  post_id INT REFERENCES images(id) ON DELETE CASCADE,
+  post_image VARCHAR(255),
+  message TEXT,
+  is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
@@ -227,6 +245,12 @@ npm start
 - `POST /api/comments`
 - `DELETE /api/comments/:id`
 
+### Notifications
+
+- `GET /api/notifications/:email` — fetch notifications for a user
+- `PATCH /api/notifications/:id/read` — mark a notification as read
+- `DELETE /api/notifications/clear/:email` — clear all notifications for a user
+
 ## Notes and current caveats
 
 - The root project does not have a single workspace script; client and server are run independently.
@@ -255,8 +279,8 @@ npm start
 
 ## Suggested next improvements
 
-- Move creation of `comments` and `ai_generations` into `server/config/initDb.js`
-- Add `.env.example` files for client and server
+- Move creation of `comments`, `ai_generations`, and `notifications` into `server/config/initDb.js`
 - Add a root `package.json` with concurrent dev scripts
 - Fix current ESLint warnings/errors
-- Add tests for upload, likes, comments, and AI history flows
+- Add tests for upload, likes, comments, notifications, and AI history flows
+- Paginate community posts feed for performance at scale
