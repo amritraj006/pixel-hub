@@ -5,6 +5,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiUpload, FiCheck, FiX, FiLoader, FiLogIn, FiCamera } from 'react-icons/fi';
 import { FaCloudUploadAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const UploadForm = () => {
   const [title, setTitle] = useState('');
@@ -16,6 +17,7 @@ const UploadForm = () => {
   const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef(null);
   const { isSignedIn, user } = useUser();
+  const navigate = useNavigate();
 
   const categories = ['Nature', 'Travel', 'Food', 'Architecture', 'Portrait', 'Art', 'Technology', 'Fashion', 'Sports', 'Other'];
 
@@ -59,11 +61,30 @@ const UploadForm = () => {
     data.append('image', image);
 
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/upload-image`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
-      toast.dismiss(loadingToast);
-      toast.success('Upload successful!', { style: { background: '#18181b', color: '#fff', border: '1px solid #3f3f46' } });
-      setTitle(''); setCategory(''); setDescription(''); setImage(null); setPreview(null);
-    } catch (err) {
+  await axios.post(`${import.meta.env.VITE_BACKEND_URL}/upload/upload-image`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+
+  toast.dismiss(loadingToast);
+
+  toast.success('Upload successful!', {
+    style: { background: '#18181b', color: '#fff', border: '1px solid #3f3f46' }
+  });
+
+  // Reset form
+  setTitle('');
+  setCategory('');
+  setDescription('');
+  setImage(null);
+  setPreview(null);
+
+  // ⏳ Wait, then navigate + scroll
+  setTimeout(() => {
+    navigate('/post');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 1500); // adjust time (ms) if needed
+
+} catch (err) {
       toast.dismiss(loadingToast);
       toast.error('Upload failed. Please try again.', { style: { background: '#18181b', color: '#fff', border: '1px solid #3f3f46' } });
     } finally {

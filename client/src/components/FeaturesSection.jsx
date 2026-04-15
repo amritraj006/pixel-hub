@@ -1,49 +1,49 @@
 import React from 'react';
-import { Search, Heart, Download, Zap, Camera, Layers, Shield } from 'lucide-react';
+import { Upload, Heart, MessageCircle, Bell, Sparkles, Download, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const features = [
   {
-    icon: <Search className="w-5 h-5 text-blue-400" strokeWidth={1.5} />,
-    title: "Smart Search",
-    description: "AI-powered search finds perfect images in seconds with natural language queries.",
-    color: "from-blue-400 to-sky-400",
-    glowColor: "shadow-blue-500/20"
-  },
-  {
-    icon: <Camera className="w-5 h-5 text-purple-400" strokeWidth={1.5} />,
-    title: "4K Quality",
-    description: "Ultra HD resolution for stunning clarity in all your creative projects.",
-    color: "from-fuchsia-400 to-purple-400",
-    glowColor: "shadow-purple-500/20"
+    icon: <Upload className="w-5 h-5 text-indigo-400" strokeWidth={1.5} />,
+    title: "Upload & Share",
+    description: "Publish your artwork in seconds — add a title, pick a category, and share it with the Pixel Hub community. Secured with Clerk authentication.",
+    color: "from-indigo-400 to-violet-400",
+    glowColor: "shadow-indigo-500/20"
   },
   {
     icon: <Heart className="w-5 h-5 text-rose-400" strokeWidth={1.5} />,
-    title: "Curated Collections",
-    description: "Hand-selected by design experts for maximum visual impact and quality.",
+    title: "Like Posts",
+    description: "Show appreciation for great artwork with real-time like counts. Every tap is synced instantly across all viewers.",
     color: "from-rose-400 to-pink-400",
     glowColor: "shadow-pink-500/20"
   },
   {
-    icon: <Download className="w-5 h-5 text-emerald-400" strokeWidth={1.5} />,
-    title: "One-Click Downloads",
-    description: "Instant access to multiple sizes and formats without any hidden watermarks.",
-    color: "from-emerald-400 to-teal-400",
-    glowColor: "shadow-emerald-500/20"
+    icon: <MessageCircle className="w-5 h-5 text-sky-400" strokeWidth={1.5} />,
+    title: "Comment & Reply",
+    description: "Drop a comment or reply in a thread. Full nested comment support keeps conversations organized and contextual.",
+    color: "from-sky-400 to-cyan-400",
+    glowColor: "shadow-sky-500/20"
   },
   {
-    icon: <Layers className="w-5 h-5 text-amber-400" strokeWidth={1.5} />,
-    title: "10M+ Assets",
-    description: "Massive library with fresh, exclusive content added daily.",
+    icon: <Bell className="w-5 h-5 text-amber-400" strokeWidth={1.5} />,
+    title: "Real-Time Notifications",
+    description: "Get instant Socket.IO-powered alerts whenever someone likes or comments on your post. Never miss a moment of engagement.",
     color: "from-amber-400 to-orange-400",
     glowColor: "shadow-orange-500/20"
   },
   {
-    icon: <Shield className="w-5 h-5 text-indigo-400" strokeWidth={1.5} />,
-    title: "Safe & Legal",
-    description: "All images are properly licensed for personal and commercial usage.",
-    color: "from-indigo-400 to-blue-500",
-    glowColor: "shadow-indigo-500/20"
+    icon: <Sparkles className="w-5 h-5 text-purple-400" strokeWidth={1.5} />,
+    title: "AI Image Generator",
+    description: "Turn your imagination into visuals. Our built-in AI generator lets you create original images from a text prompt in seconds.",
+    color: "from-fuchsia-400 to-purple-400",
+    glowColor: "shadow-purple-500/20"
+  },
+  {
+    icon: <Download className="w-5 h-5 text-emerald-400" strokeWidth={1.5} />,
+    title: "One-Click Download",
+    description: "Download any image from the gallery instantly — no watermarks, no redirects. Works seamlessly on both desktop and mobile.",
+    color: "from-emerald-400 to-teal-400",
+    glowColor: "shadow-emerald-500/20"
   }
 ];
 

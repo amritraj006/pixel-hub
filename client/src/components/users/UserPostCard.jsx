@@ -432,7 +432,7 @@ const UserPostCard = ({ post, autoOpenComments = false, initialReplyTo = null, p
                   className="max-h-[80vh] w-auto max-w-full object-contain rounded-lg shadow-2xl shadow-indigo-500/10 border border-zinc-800/50"
                 />
                 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                   <button
                     onClick={handleDownload}
                     className="bg-zinc-900/80 hover:bg-indigo-600 border border-zinc-700 hover:border-indigo-500 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center space-x-2 backdrop-blur-md text-sm font-medium transition-all"
